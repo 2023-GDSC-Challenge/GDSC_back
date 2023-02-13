@@ -1,0 +1,14 @@
+#spring:
+#  h2: # 1. h2 정보 띄우기 위함
+#    console:
+#      enabled: true # 근데 그냥 디버깅 모드로 실행시키니까 콘솔창에 떴음
+#  jpa: # 2. 쿼리문을 콘솔에 띄우기 위함
+#    show_sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+#        use_sql_comments: true
+developer: # 3. SpEL
+  level:
+    min:
+      senior: 12

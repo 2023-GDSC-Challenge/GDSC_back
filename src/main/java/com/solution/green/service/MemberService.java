@@ -10,11 +10,12 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.solution.green.code.DatabaseName.USERS;
+
 
 @Service
 public class MemberService {
-    public static final String COLLECTION_NAME = "users"; // database name
-    // TODO database name -> code
+    public static final String COLLECTION_NAME = USERS.getDescription(); // database name
     public static Firestore firestore = FirestoreClient.getFirestore();
 
     public String createMember(MemberDto.Request request) throws Exception{

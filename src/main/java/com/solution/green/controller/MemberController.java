@@ -15,38 +15,31 @@ import java.util.List;
 public class MemberController {
     @Autowired
     MemberService memberService;
-
     @PostMapping("/create-member")
     public String createMember(@Valid @RequestBody MemberDto.Request request)
             throws Exception {
         log.info("[request]: {}", request);
         return memberService.createMember(request);
     }
-
     @GetMapping("/members")
     public List<MemberDto.Response> getAllMembers() throws Exception{
         return memberService.getAllMembers();
     }
-
     @GetMapping("/members/{memberId}")
     public MemberDto.Response getMemberDetail(
             @PathVariable final String memberId
-    ) throws Exception {
-        return memberService.getMemberDetail(memberId);
-    }
-
+    ) throws Exception {return memberService.getMemberDetail(memberId);}
     @PutMapping("/members/{memberId}")
     public String editMember(
             @PathVariable final String memberId,
             @Valid @RequestBody MemberDto.Request request
-    ) throws Exception {
-        return memberService.editMember(memberId, request);
-    }
-
+    ) throws Exception {return memberService.editMember(memberId, request);}
     @DeleteMapping("/members/{memberId}")
     public void deleteMember(
             @PathVariable final String memberId
-    ){
-        log.info(memberService.deleteMember(memberId));
-    }
+    ){log.info(memberService.deleteMember(memberId));}
+
+    @PostMapping("/login")
+    public MemberDto.Response login(@Valid @RequestBody MemberDto.login loginMember)
+            throws Exception {return memberService.login(loginMember);}
 }

@@ -13,6 +13,18 @@ public class MemberDto {
     @NoArgsConstructor
     @Builder
     @ToString
+    public static class login{
+        @NotNull
+        private String memberId;
+        @NotNull
+        private String password;
+    }
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    @ToString
     public static class Request{
         @NotNull
         @Size(min = 3, max = 50, message = "memberId size must be 3~50")

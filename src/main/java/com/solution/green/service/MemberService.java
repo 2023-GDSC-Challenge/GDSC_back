@@ -81,14 +81,10 @@ public class MemberService {
         return "Document id: " + memberId + " delete";
     }
 
-//    public MemberDto.Response login(MemberDto.login loginMember) {
-//        DocumentSnapshot documentSnapshot = firestore.collection(COLLECTION_NAME)
-//                .document(memberId)
-//                .get()
-//                .get();
-//        if(documentSnapshot.exists())
-//            return documentSnapshot.toObject(MemberDto.Response.class);
-//        else
-//            return null; // TODO error handling
-//    }
+    public MemberDto.Response login(MemberDto.login loginMember) throws Exception {
+        MemberDto.Response detail = getMemberDetail(loginMember.getMemberId());
+        if (loginMember.getPassword().equals(detail.getPassword()))
+            return detail;
+        else throw new Exception(); // TODO exception handling - wrong password
+    }
 }

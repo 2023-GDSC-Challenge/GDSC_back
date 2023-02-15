@@ -27,8 +27,17 @@ public class MemberService {
         DocumentReference documentReference =
                 firestore.collection(COLLECTION_NAME).document(memberId);
         DocumentSnapshot documentSnapshot = documentReference.get().get();
-        if (!documentSnapshot.exists())
+        if (documentSnapshot.exists())
             throw new Exception(); // TODO implement - duplicate memberId
+        else
+            return documentReference;
+    }
+    private DocumentReference validateEditMemberRequest(@NonNull String memberId) throws Exception {
+        DocumentReference documentReference =
+                firestore.collection(COLLECTION_NAME).document(memberId);
+        DocumentSnapshot documentSnapshot = documentReference.get().get();
+        if (!documentSnapshot.exists())
+            throw new Exception(); // TODO implement - no member
         else
             return documentReference;
     }
@@ -59,7 +68,7 @@ public class MemberService {
     public String editMember(String memberId, MemberDto.Request request)
             throws Exception {
         DocumentReference documentReference =
-                validateCreateMemberRequest(request.getMemberId());
+                validateEditMemberRequest(request.getMemberId());
         // TODO 어떤 내용을 editable 하게 설정할 건지 추후 논의 (반드시 id는 변경 불가하도록)
         ApiFuture<WriteResult> apiFuture = documentReference.set(request);
         return apiFuture.get().getUpdateTime().toString();
@@ -71,4 +80,15 @@ public class MemberService {
                         .delete();
         return "Document id: " + memberId + " delete";
     }
+
+//    public MemberDto.Response login(MemberDto.login loginMember) {
+//        DocumentSnapshot documentSnapshot = firestore.collection(COLLECTION_NAME)
+//                .document(memberId)
+//                .get()
+//                .get();
+//        if(documentSnapshot.exists())
+//            return documentSnapshot.toObject(MemberDto.Response.class);
+//        else
+//            return null; // TODO error handling
+//    }
 }

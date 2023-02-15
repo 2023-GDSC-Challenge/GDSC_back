@@ -5,12 +5,14 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.internal.NonNull;
 import com.solution.green.dto.MemberDto;
+import com.solution.green.exception.GreenException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.solution.green.code.DatabaseName.USERS;
+import static com.solution.green.code.GreenErrorCode.*;
 
 
 @Service
@@ -22,7 +24,7 @@ public class MemberService {
         DocumentReference documentReference =
                 getSpecificDocumentReference(request.getMemberId());
         if (validateMemberExists(documentReference))
-            throw new Exception(); // TODO - exception: already exist
+            throw new GreenException(ALREADY_REGISTERED);
         else return documentReference.set(request)
                 .get().getUpdateTime().toString();
     }
@@ -41,7 +43,7 @@ public class MemberService {
     public MemberDto.Response getMemberDetail(String memberId) throws Exception{
         DocumentReference documentReference = getSpecificDocumentReference(memberId);
         if (!validateMemberExists(documentReference))
-            throw new Exception(); // TODO - exception: no user
+            throw new GreenException(NO_MEMBER);
         else return documentReference.get().get().toObject(MemberDto.Response.class);
     }
     public String editMember(String memberId, MemberDto.Request editRequest)
@@ -49,7 +51,7 @@ public class MemberService {
         DocumentReference documentReference = getSpecificDocumentReference(memberId);
         // TODO 어떤 내용을 editable 하게 설정할 건지 추후 논의 (반드시 id는 변경 불가하도록)
         if (!validateMemberExists(documentReference))
-            throw new Exception(); // TODO - exception: no user
+            throw new GreenException(NO_MEMBER);
         else return documentReference.set(editRequest)
                 .get().getUpdateTime().toString();
     }
@@ -67,6 +69,6 @@ public class MemberService {
         MemberDto.Response detail = getMemberDetail(loginMember.getMemberId());
         if (loginMember.getPassword().equals(detail.getPassword()))
             return detail;
-        else throw new Exception(); // TODO exception handling - wrong password
+        else throw new GreenException(WRONG_PASSWORD);
     }
 }

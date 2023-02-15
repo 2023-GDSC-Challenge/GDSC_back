@@ -4,7 +4,7 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.internal.NonNull;
-import com.solution.green.entity.CreateMember;
+import com.solution.green.dto.MemberDto;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class MemberService {
     // TODO database name -> code
     public static Firestore firestore = FirestoreClient.getFirestore();
 
-    public String createMember(CreateMember.Request request) throws Exception{
+    public String createMember(MemberDto.Request request) throws Exception{
         DocumentReference documentReference =
                 validateCreateMemberRequest(request.getMemberId());
         ApiFuture<WriteResult> apiFuture = documentReference.set(request);
@@ -33,8 +33,8 @@ public class MemberService {
             return documentReference;
     }
 
-    public List<CreateMember.Response> getAllMembers() throws Exception{
-        List<CreateMember.Response> responseList = new ArrayList<>();
+    public List<MemberDto.Response> getAllMembers() throws Exception{
+        List<MemberDto.Response> responseList = new ArrayList<>();
 
         List<QueryDocumentSnapshot> documents =
                 firestore.collection(COLLECTION_NAME)
@@ -42,21 +42,21 @@ public class MemberService {
                         .get()
                         .getDocuments();
         for (QueryDocumentSnapshot document : documents)
-            responseList.add(document.toObject(CreateMember.Response.class));
+            responseList.add(document.toObject(MemberDto.Response.class));
 
         return responseList;
     }
-    public CreateMember.Response getMemberDetail(String memberId) throws Exception{
+    public MemberDto.Response getMemberDetail(String memberId) throws Exception{
         DocumentSnapshot documentSnapshot = firestore.collection(COLLECTION_NAME)
                 .document(memberId)
                 .get()
                 .get();
         if(documentSnapshot.exists())
-            return documentSnapshot.toObject(CreateMember.Response.class);
+            return documentSnapshot.toObject(MemberDto.Response.class);
         else
             return null; // TODO error handling
     }
-    public String editMember(String memberId, CreateMember.Request request)
+    public String editMember(String memberId, MemberDto.Request request)
             throws Exception {
         DocumentReference documentReference =
                 validateCreateMemberRequest(request.getMemberId());

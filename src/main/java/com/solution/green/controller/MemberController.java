@@ -1,6 +1,6 @@
 package com.solution.green.controller;
 
-import com.solution.green.entity.CreateMember;
+import com.solution.green.dto.MemberDto;
 import com.solution.green.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +17,19 @@ public class MemberController {
     MemberService memberService;
 
     @PostMapping("/create-member")
-    public String createMember(@Valid @RequestBody CreateMember.Request request)
+    public String createMember(@Valid @RequestBody MemberDto.Request request)
             throws Exception {
         log.info("[request]: {}", request);
         return memberService.createMember(request);
     }
 
     @GetMapping("/members")
-    public List<CreateMember.Response> getAllMembers() throws Exception{
+    public List<MemberDto.Response> getAllMembers() throws Exception{
         return memberService.getAllMembers();
     }
 
     @GetMapping("/members/{memberId}")
-    public CreateMember.Response getMemberDetail(
+    public MemberDto.Response getMemberDetail(
             @PathVariable final String memberId
     ) throws Exception {
         return memberService.getMemberDetail(memberId);
@@ -38,7 +38,7 @@ public class MemberController {
     @PutMapping("/members/{memberId}")
     public String editMember(
             @PathVariable final String memberId,
-            @Valid @RequestBody CreateMember.Request request
+            @Valid @RequestBody MemberDto.Request request
     ) throws Exception {
         return memberService.editMember(memberId, request);
     }

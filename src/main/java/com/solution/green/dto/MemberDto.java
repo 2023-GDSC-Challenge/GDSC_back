@@ -1,14 +1,12 @@
-package com.solution.green.entity;
+package com.solution.green.dto;
 
 import com.google.firebase.database.annotations.NotNull;
-import com.google.firebase.database.annotations.Nullable;
 import lombok.*;
 
 import javax.validation.constraints.Size;
-import java.util.Date;
 
 
-public class CreateMember {
+public class MemberDto {
     @Getter
     @Setter
     @AllArgsConstructor

@@ -19,66 +19,47 @@ public class MemberService {
 
     public String createMember(MemberDto.Request request) throws Exception{
         DocumentReference documentReference =
-                validateCreateMemberRequest(request.getMemberId());
-        ApiFuture<WriteResult> apiFuture = documentReference.set(request);
-        return apiFuture.get().getUpdateTime().toString();
+                getSpecificDocumentReference(request.getMemberId());
+        if (validateMemberExists(documentReference))
+            throw new Exception(); // TODO - exception: already exist
+        else return documentReference.set(request)
+                .get().getUpdateTime().toString();
     }
-    private DocumentReference validateCreateMemberRequest(@NonNull String memberId) throws Exception {
-        DocumentReference documentReference =
-                firestore.collection(COLLECTION_NAME).document(memberId);
-        DocumentSnapshot documentSnapshot = documentReference.get().get();
-        if (documentSnapshot.exists())
-            throw new Exception(); // TODO implement - duplicate memberId
-        else
-            return documentReference;
+    private Boolean validateMemberExists(@NonNull DocumentReference documentReference) throws Exception {
+        if (documentReference.get().get().exists()) return true;
+        else return false;
     }
-    private DocumentReference validateEditMemberRequest(@NonNull String memberId) throws Exception {
-        DocumentReference documentReference =
-                firestore.collection(COLLECTION_NAME).document(memberId);
-        DocumentSnapshot documentSnapshot = documentReference.get().get();
-        if (!documentSnapshot.exists())
-            throw new Exception(); // TODO implement - no member
-        else
-            return documentReference;
-    }
-
     public List<MemberDto.Response> getAllMembers() throws Exception{
         List<MemberDto.Response> responseList = new ArrayList<>();
-
         List<QueryDocumentSnapshot> documents =
-                firestore.collection(COLLECTION_NAME)
-                        .get()
-                        .get()
-                        .getDocuments();
+                firestore.collection(COLLECTION_NAME).get().get().getDocuments();
         for (QueryDocumentSnapshot document : documents)
             responseList.add(document.toObject(MemberDto.Response.class));
-
         return responseList;
     }
     public MemberDto.Response getMemberDetail(String memberId) throws Exception{
-        DocumentSnapshot documentSnapshot = firestore.collection(COLLECTION_NAME)
-                .document(memberId)
-                .get()
-                .get();
-        if(documentSnapshot.exists())
-            return documentSnapshot.toObject(MemberDto.Response.class);
-        else
-            return null; // TODO error handling
+        DocumentReference documentReference = getSpecificDocumentReference(memberId);
+        if (!validateMemberExists(documentReference))
+            throw new Exception(); // TODO - exception: no user
+        else return documentReference.get().get().toObject(MemberDto.Response.class);
     }
-    public String editMember(String memberId, MemberDto.Request request)
+    public String editMember(String memberId, MemberDto.Request editRequest)
             throws Exception {
-        DocumentReference documentReference =
-                validateEditMemberRequest(request.getMemberId());
+        DocumentReference documentReference = getSpecificDocumentReference(memberId);
         // TODO 어떤 내용을 editable 하게 설정할 건지 추후 논의 (반드시 id는 변경 불가하도록)
-        ApiFuture<WriteResult> apiFuture = documentReference.set(request);
-        return apiFuture.get().getUpdateTime().toString();
+        if (!validateMemberExists(documentReference))
+            throw new Exception(); // TODO - exception: no user
+        else return documentReference.set(editRequest)
+                .get().getUpdateTime().toString();
     }
 
     public String deleteMember(String memberId) {
-        ApiFuture<WriteResult> apiFuture =
-                firestore.collection(COLLECTION_NAME).document(memberId)
-                        .delete();
+        getSpecificDocumentReference(memberId).delete();
         return "Document id: " + memberId + " delete";
+    }
+
+    private static DocumentReference getSpecificDocumentReference(String memberId) {
+        return firestore.collection(COLLECTION_NAME).document(memberId);
     }
 
     public MemberDto.Response login(MemberDto.login loginMember) throws Exception {

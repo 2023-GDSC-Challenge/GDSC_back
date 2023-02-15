@@ -1,40 +1,38 @@
 package com.solution.green.controller;
 
-import com.google.cloud.firestore.DocumentReference;
 import com.solution.green.entity.CreateMember;
-import com.solution.green.service.UserService;
+import com.solution.green.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @Slf4j // log
 @CrossOrigin(origins = "*")
 public class MemberController {
     @Autowired
-    UserService userService;
+    MemberService memberService;
 
     @PostMapping("/create-member")
     public String createMember(@Valid @RequestBody CreateMember.Request request)
             throws Exception {
         log.info("[request]: {}", request);
-        return userService.createMember(request);
+        return memberService.createMember(request);
     }
 
     @GetMapping("/members")
     public List<CreateMember.Response> getAllMembers() throws Exception{
-        return userService.getAllMembers();
+        return memberService.getAllMembers();
     }
 
     @GetMapping("/members/{memberId}")
     public CreateMember.Response getMemberDetail(
             @PathVariable final String memberId
     ) throws Exception {
-        return userService.getMemberDetail(memberId);
+        return memberService.getMemberDetail(memberId);
     }
 
     @PutMapping("/members/{memberId}")
@@ -42,13 +40,13 @@ public class MemberController {
             @PathVariable final String memberId,
             @Valid @RequestBody CreateMember.Request request
     ) throws Exception {
-        return userService.editMember(memberId, request);
+        return memberService.editMember(memberId, request);
     }
 
     @DeleteMapping("/members/{memberId}")
     public void deleteMember(
             @PathVariable final String memberId
     ){
-        log.info(userService.deleteMember(memberId));
+        log.info(memberService.deleteMember(memberId));
     }
 }

@@ -8,13 +8,11 @@ import com.solution.green.entity.CreateMember;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 
 @Service
-public class UserService {
+public class MemberService {
     public static final String COLLECTION_NAME = "users"; // database name
     // TODO database name -> code
     public static Firestore firestore = FirestoreClient.getFirestore();

@@ -1,7 +1,9 @@
 package com.solution.green.controller;
 
+import com.google.firebase.database.annotations.NotNull;
 import com.solution.green.dto.MemberDto;
 import com.solution.green.service.MemberService;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,18 @@ import java.util.List;
 public class MemberController {
     @Autowired
     MemberService memberService;
+
+    @GetMapping("/getTest")
+    public String getTest(){
+        return "Get Mapping Test Success!";
+    }
+    @PostMapping("/postTest")
+    public String postTest(@RequestBody String name){
+        return "test name is: " + name;
+    }
+
+
+
     @PostMapping("/create-member")
     public String createMember(@Valid @RequestBody MemberDto.Request request)
             throws Exception {

@@ -1,54 +1,59 @@
 package com.solution.green.controller;
 
-import com.google.cloud.firestore.DocumentReference;
-import com.solution.green.entity.CreateMember;
-import com.solution.green.service.UserService;
+import com.google.firebase.database.annotations.NotNull;
+import com.solution.green.dto.MemberDto;
+import com.solution.green.service.MemberService;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @Slf4j // log
 @CrossOrigin(origins = "*")
 public class MemberController {
     @Autowired
-    UserService userService;
+    MemberService memberService;
+
+    @GetMapping("/getTest")
+    public String getTest(){
+        return "Get Mapping Test Success!";
+    }
+    @PostMapping("/postTest")
+    public String postTest(@RequestBody String name){
+        return "test name is: " + name;
+    }
+
+
 
     @PostMapping("/create-member")
-    public String createMember(@Valid @RequestBody CreateMember.Request request)
+    public String createMember(@Valid @RequestBody MemberDto.Request request)
             throws Exception {
         log.info("[request]: {}", request);
-        return userService.createMember(request);
+        return memberService.createMember(request);
     }
-
     @GetMapping("/members")
-    public List<CreateMember.Response> getAllMembers() throws Exception{
-        return userService.getAllMembers();
+    public List<MemberDto.Response> getAllMembers() throws Exception{
+        return memberService.getAllMembers();
     }
-
     @GetMapping("/members/{memberId}")
-    public CreateMember.Response getMemberDetail(
+    public MemberDto.Response getMemberDetail(
             @PathVariable final String memberId
-    ) throws Exception {
-        return userService.getMemberDetail(memberId);
-    }
-
+    ) throws Exception {return memberService.getMemberDetail(memberId);}
     @PutMapping("/members/{memberId}")
     public String editMember(
             @PathVariable final String memberId,
-            @Valid @RequestBody CreateMember.Request request
-    ) throws Exception {
-        return userService.editMember(memberId, request);
-    }
-
+            @Valid @RequestBody MemberDto.Request request
+    ) throws Exception {return memberService.editMember(memberId, request);}
     @DeleteMapping("/members/{memberId}")
     public void deleteMember(
             @PathVariable final String memberId
-    ){
-        log.info(userService.deleteMember(memberId));
-    }
+    ){log.info(memberService.deleteMember(memberId));}
+
+    @PostMapping("/login")
+    public MemberDto.Response login(@Valid @RequestBody MemberDto.login loginMember)
+            throws Exception {return memberService.login(loginMember);}
 }

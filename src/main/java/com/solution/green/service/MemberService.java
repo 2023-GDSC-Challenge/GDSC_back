@@ -1,12 +1,15 @@
 package com.solution.green.service;
 
-import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.internal.NonNull;
 import com.solution.green.dto.MemberDto;
+import com.solution.green.entity.Member;
 import com.solution.green.exception.GreenException;
+import com.solution.green.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +19,30 @@ import static com.solution.green.code.GreenErrorCode.*;
 
 
 @Service
+@RequiredArgsConstructor
 public class MemberService {
     public static final String COLLECTION_NAME = USERS.getDescription(); // database name
     public static Firestore firestore = FirestoreClient.getFirestore();
+
+
+    private final MemberRepository memberRepository;
+
+    @Transactional
+    public void testing() {
+        memberRepository.save(Member.builder()
+                                .name("name")
+                                .email("email@gmail.com")
+                                .password("password")
+                                .build());
+    }
+
+
+
+
+
+
+
+
 
     public String createMember(MemberDto.Request request) throws Exception{
         DocumentReference documentReference =

@@ -27,7 +27,7 @@ public class MemberController {
         return "test name is: " + name;
     }
 
-    @PostMapping("/rde-testing")
+    @GetMapping("/rde-testing")
     public void rdsTesting(){
         memberService.testing();
         System.out.println("done!");

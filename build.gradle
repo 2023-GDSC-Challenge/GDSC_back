@@ -15,7 +15,8 @@ dependencies {
 	runtimeOnly 'com.google.firebase:firebase-admin:8.1.0'
 
 	// 불필요한 JPA 등 DB 설정 남아있으면 firebase database 못찾음
-	//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'mysql:mysql-connector-java:8.0.30' // for com.mysql.cj.jdbc.Driver
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	//	runtimeOnly 'com.h2database:h2' // for embedded database - memory DB
 	//	testImplementation 'com.h2database:h2:2.1.214'
 

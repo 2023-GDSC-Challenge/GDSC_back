@@ -1,6 +1,7 @@
 package com.solution.green.dto;
 
 import com.google.firebase.database.annotations.NotNull;
+import com.solution.green.entity.Member;
 import lombok.*;
 
 import javax.validation.constraints.Size;
@@ -8,49 +9,55 @@ import javax.validation.constraints.Size;
 
 public class MemberDto {
     @Getter
-    @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    @ToString
-    public static class login{
-        @NotNull
-        private String memberId;
-        @NotNull
-        private String password;
-    }
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    @ToString
-    public static class Request{
-        @NotNull
-        @Size(min = 3, max = 50, message = "memberId size must be 3~50")
-        private String memberId;
-        @NotNull
-        private String name;
+    public static class Login {
         @NotNull
         private String email;
         @NotNull
         private String password;
     }
+
     @Getter
-    @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    @ToString
-    public static class Response{
+    public static class Request {
         @NotNull
-        @Size(min = 3, max = 50, message = "memberId size must be 3~50")
-        private String memberId;
-        @NotNull
-        private String name;
+        private String nickname;
         @NotNull
         private String email;
         @NotNull
         private String password;
+        @NotNull
+        private String residence;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class Response {
+        @NotNull
+        private Long memberId;
+        @NotNull
+        private String nickname;
+        @NotNull
+        private String email;
+        @NotNull
+        private String password;
+        @NotNull
+        private String residence;
+
+        public static Response fromEntity(Member member) {
+            return Response.builder()
+                    .memberId(member.getId())
+                    .nickname(member.getNickname())
+                    .email(member.getEmail())
+                    .password(member.getPassword())
+                    .residence(member.getResidence())
+                    .build();
+        }
     }
 }

@@ -7,18 +7,14 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
 	implementation 'org.springframework.boot:spring-boot-devtools:2.7.5'
-	implementation 'com.google.firebase:firebase-admin:8.1.0'
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.jetbrains:annotations:23.0.0'
 
 	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.google.firebase:firebase-admin:8.1.0'
 
-	// 불필요한 JPA 등 DB 설정 남아있으면 firebase database 못찾음
 	implementation 'mysql:mysql-connector-java:8.0.30' // for com.mysql.cj.jdbc.Driver
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	//	runtimeOnly 'com.h2database:h2' // for embedded database - memory DB
-	//	testImplementation 'com.h2database:h2:2.1.214'
 
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

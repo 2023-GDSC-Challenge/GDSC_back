@@ -1,12 +1,12 @@
 package com.solution.green.service;
 
-import com.google.firebase.internal.NonNull;
 import com.solution.green.dto.MemberDto;
 import com.solution.green.entity.Member;
 import com.solution.green.exception.GreenException;
 import com.solution.green.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

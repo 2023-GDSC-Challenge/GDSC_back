@@ -1,10 +1,9 @@
 package com.solution.green.dto;
 
-import com.google.firebase.database.annotations.NotNull;
 import com.solution.green.entity.Member;
 import lombok.*;
 
-import javax.validation.constraints.Size;
+import javax.validation.constraints.NotNull;
 
 
 public class MemberDto {

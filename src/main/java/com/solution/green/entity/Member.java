@@ -24,20 +24,20 @@ public class Member implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id", length = 20)
+    @Column(name = "member_id", length = 20)
     private Long id;
 
-    @Column(name = "user_name", length = 50, nullable = false)
-    private String name;
-
-    @Column(name = "user_email", length = 100, nullable = false, unique = true)
+    @Column(name = "member_email", length = 50, nullable = false, unique = true)
     private String email;
 
-    @Column(name = "user_password", length = 200, nullable = false)
+    @Column(name = "member_nickname", length = 30, nullable = false)
+    private String nickname;
+
+    @Column(name = "member_password", length = 50, nullable = false)
     private String password;
 
-    @Column(name = "user_image", nullable = true)
-    private String image;
+    @Column(name = "member_residence", length = 100, nullable = true)
+    private String residence;
 
     // TODO - AuditingEntityListener 사용해야함
 }

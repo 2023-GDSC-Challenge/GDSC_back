@@ -30,7 +30,7 @@ public class MemberService {
     @Transactional
     public void testing() {
         memberRepository.save(Member.builder()
-                                .name("name")
+                                .nickname("name")
                                 .email("email@gmail.com")
                                 .password("password")
                                 .build());

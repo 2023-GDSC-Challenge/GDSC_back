@@ -1,59 +1,72 @@
 package com.solution.green.controller;
 
-import com.google.firebase.database.annotations.NotNull;
 import com.solution.green.dto.MemberDto;
+import com.solution.green.service.GCSService;
 import com.solution.green.service.MemberService;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
-@Slf4j // log
+@RequiredArgsConstructor
+@Slf4j
 @CrossOrigin(origins = "*")
+@RequestMapping("/api")
 public class MemberController {
-    @Autowired
-    MemberService memberService;
-
-    @GetMapping("/getTest")
-    public String getTest(){
-        return "Get Mapping Test Success!";
-    }
-    @PostMapping("/postTest")
-    public String postTest(@RequestBody String name){
-        return "test name is: " + name;
-    }
-
-
+    private final MemberService memberService;
+    private final GCSService gcsService;
 
     @PostMapping("/create-member")
-    public String createMember(@Valid @RequestBody MemberDto.Request request)
-            throws Exception {
-        log.info("[request]: {}", request);
+    public MemberDto.Response createMember(
+            @Valid @RequestBody MemberDto.Request request) {
         return memberService.createMember(request);
     }
-    @GetMapping("/members")
-    public List<MemberDto.Response> getAllMembers() throws Exception{
+
+    @GetMapping("/get-all-members")
+    public List<MemberDto.Response> getAllMembers() {
         return memberService.getAllMembers();
     }
-    @GetMapping("/members/{memberId}")
-    public MemberDto.Response getMemberDetail(
-            @PathVariable final String memberId
-    ) throws Exception {return memberService.getMemberDetail(memberId);}
-    @PutMapping("/members/{memberId}")
-    public String editMember(
-            @PathVariable final String memberId,
-            @Valid @RequestBody MemberDto.Request request
-    ) throws Exception {return memberService.editMember(memberId, request);}
-    @DeleteMapping("/members/{memberId}")
-    public void deleteMember(
-            @PathVariable final String memberId
-    ){log.info(memberService.deleteMember(memberId));}
+
+    @GetMapping("/get-member-detail/{memberId}")
+    public MemberDto.Response getMemberDetail(@PathVariable final Long memberId) {
+        return memberService.getMemberDetail(memberId);
+    }
+
+    @GetMapping("/get-user-image/{memberId}")
+    public String getUserImage(@PathVariable final Long memberId) {
+        return "https://storage.googleapis.com/eco-reward-bucket/" +
+                memberService.getUserImageURL(memberId);
+    }
+
+    @PatchMapping("/update-member-image/{memberId}")
+    public String updateMemberImage(@PathVariable final Long memberId,
+                                    @RequestPart(value="file") MultipartFile file)
+            throws IOException {
+        String uuid = gcsService.uploadImage(file);
+        memberService.updateMemberImage(memberId, uuid);
+        return "https://storage.googleapis.com/eco-reward-bucket/" + uuid;
+    }
+
+    @PutMapping("/update-member/{memberId}")
+    public MemberDto.Response updateMember(
+            @PathVariable final Long memberId,
+            @Valid @RequestBody MemberDto.Request request) {
+        return memberService.updateMember(memberId, request);
+    }
+
+    @DeleteMapping("/delete-member/{memberId}")
+    public void deleteMember(@PathVariable final Long memberId) {
+        memberService.deleteMember(memberId);
+    }
 
     @PostMapping("/login")
-    public MemberDto.Response login(@Valid @RequestBody MemberDto.login loginMember)
-            throws Exception {return memberService.login(loginMember);}
+    public MemberDto.Response login(@Valid @RequestBody MemberDto.Login loginMember) {
+        return memberService.login(loginMember);
+    }
+
 }

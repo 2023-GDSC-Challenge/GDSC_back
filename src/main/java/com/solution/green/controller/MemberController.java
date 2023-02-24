@@ -39,7 +39,8 @@ public class MemberController {
 
     @GetMapping("/getUserImage/{memberId}")
     public String getUserImage(@PathVariable final Long userId) {
-        return memberService.getUserImageURL(userId);
+        return "https://storage.googleapis.com/eco-reward-bucket/" +
+                memberService.getUserImageURL(userId);
     }
 
     @PatchMapping("/update-member-image/{memberId}")
@@ -48,7 +49,7 @@ public class MemberController {
             throws IOException {
         String uuid = gcsService.uploadImage(file);
         memberService.updateMemberImage(memberId, uuid);
-        return "https://storage.googleapis.com/eco-reward-bucket/"+uuid;
+        return "https://storage.googleapis.com/eco-reward-bucket/" + uuid;
     }
 
     @PutMapping("/update-member/{memberId}")

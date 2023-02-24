@@ -18,22 +18,6 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 @RequestMapping("/api")
 public class MemberController {
-    @GetMapping("")
-    public String home() {
-        return "This is index page!\n" +
-                "다른 페이지로 접속하기 위해서는 http://35.216.34.93:8080/api 뒷부분에\n" +
-                "notion api 페이지에 있는 endpoint를 붙여주세요!";
-    }
-    @GetMapping("/getTest")
-    public String getTest() {
-        return "Get Mapping Test Success!";
-    }
-    @PostMapping("/postTest")
-    public String postTest(@RequestBody String name) {
-        return "test name is: " + name;
-    }
-    /*-----------------------front connecting test-----------------------*/
-
     private final MemberService memberService;
     private final GCSService gcsService;
 
@@ -59,12 +43,12 @@ public class MemberController {
     }
 
     @PatchMapping("/update-member-image/{memberId}")
-    public String updateMemberImage(@PathVariable final Long userId,
+    public String updateMemberImage(@PathVariable final Long memberId,
                                     @RequestPart(value="file") MultipartFile file)
             throws IOException {
         String uuid = gcsService.uploadImage(file);
-        memberService.updateMemberImage(userId, gcsService.uploadImage(file));
-        return uuid;
+        memberService.updateMemberImage(memberId, uuid);
+        return "https://storage.googleapis.com/eco-reward-bucket/"+uuid;
     }
 
     @PutMapping("/update-member/{memberId}")

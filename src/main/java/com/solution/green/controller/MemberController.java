@@ -38,9 +38,9 @@ public class MemberController {
     }
 
     @GetMapping("/get-user-image/{memberId}")
-    public String getUserImage(@PathVariable final Long userId) {
+    public String getUserImage(@PathVariable final Long memberId) {
         return "https://storage.googleapis.com/eco-reward-bucket/" +
-                memberService.getUserImageURL(userId);
+                memberService.getUserImageURL(memberId);
     }
 
     @PatchMapping("/update-member-image/{memberId}")

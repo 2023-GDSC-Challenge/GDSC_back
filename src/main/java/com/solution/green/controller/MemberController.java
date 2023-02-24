@@ -1,31 +1,25 @@
 package com.solution.green.controller;
 
 import com.solution.green.dto.MemberDto;
+import com.solution.green.service.GCSService;
 import com.solution.green.service.MemberService;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @Slf4j
 @CrossOrigin(origins = "*")
+@RequestMapping("/api")
 public class MemberController {
-    @GetMapping("/getTest")
-    public String getTest() {
-        return "Get Mapping Test Success!";
-    }
-    @PostMapping("/postTest")
-    public String postTest(@RequestBody String name) {
-        return "test name is: " + name;
-    }
-    /*-----------------------front connecting test-----------------------*/
-
-    @Autowired
-    MemberService memberService;
+    private final MemberService memberService;
+    private final GCSService gcsService;
 
     @PostMapping("/create-member")
     public MemberDto.Response createMember(
@@ -33,24 +27,39 @@ public class MemberController {
         return memberService.createMember(request);
     }
 
-    @GetMapping("/members")
+    @GetMapping("/get-all-members")
     public List<MemberDto.Response> getAllMembers() {
         return memberService.getAllMembers();
     }
 
-    @GetMapping("/members/{memberId}")
+    @GetMapping("/get-member-detail/{memberId}")
     public MemberDto.Response getMemberDetail(@PathVariable final Long memberId) {
         return memberService.getMemberDetail(memberId);
     }
 
-    @PutMapping("/members/{memberId}")
-    public MemberDto.Response editMember(
-            @PathVariable final Long memberId,
-            @Valid @RequestBody MemberDto.Request request) {
-        return memberService.editMember(memberId, request);
+    @GetMapping("/get-user-image/{memberId}")
+    public String getUserImage(@PathVariable final Long memberId) {
+        return "https://storage.googleapis.com/eco-reward-bucket/" +
+                memberService.getUserImageURL(memberId);
     }
 
-    @DeleteMapping("/members/{memberId}")
+    @PatchMapping("/update-member-image/{memberId}")
+    public String updateMemberImage(@PathVariable final Long memberId,
+                                    @RequestPart(value="file") MultipartFile file)
+            throws IOException {
+        String uuid = gcsService.uploadImage(file);
+        memberService.updateMemberImage(memberId, uuid);
+        return "https://storage.googleapis.com/eco-reward-bucket/" + uuid;
+    }
+
+    @PutMapping("/update-member/{memberId}")
+    public MemberDto.Response updateMember(
+            @PathVariable final Long memberId,
+            @Valid @RequestBody MemberDto.Request request) {
+        return memberService.updateMember(memberId, request);
+    }
+
+    @DeleteMapping("/delete-member/{memberId}")
     public void deleteMember(@PathVariable final Long memberId) {
         memberService.deleteMember(memberId);
     }

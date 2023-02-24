@@ -10,11 +10,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.solution.green.code.GreenErrorCode.*;
-
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +34,7 @@ public class MemberService {
                                     .build()));
         else throw new GreenException(ALREADY_REGISTERED);
     }
+
     public MemberDto.Response login(@NonNull MemberDto.Login loginMember) {
         Member entity = getMemberEntityByEmail(loginMember.getEmail());
         if (loginMember.getPassword().equals(entity.getPassword()))
@@ -50,9 +51,33 @@ public class MemberService {
         memberRepository.deleteById(memberId);
     }
 
+    public String getUserImageURL(Long userId){
+        return getUserEntityById(userId).getImage();
+    }
+    public MemberDto.Response getMemberDetail(Long memberId) {
+        return MemberDto.Response.fromEntity(getUserEntityById(memberId));
+    }
+    @Transactional(readOnly = true)
+    public List<MemberDto.Response> getAllMembers() {
+        return memberRepository.findAll()
+                .stream()
+                .map(MemberDto.Response::fromEntity)
+                .collect(Collectors.toList());
+    }
+    @Transactional(readOnly = true)
+    private Member getMemberEntityByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GreenException(WRONG_EMAIL));
+    }
+    @Transactional(readOnly = true)
+    private Member getUserEntityById(Long userId) {
+        return memberRepository.findById(userId)
+                .orElseThrow(() -> new GreenException(NO_MEMBER));
+    }
+
     @Transactional
-    public MemberDto.Response editMember(Long memberId,
-                                         @Nullable MemberDto.Request updateRequest) {
+    public MemberDto.Response updateMember(Long memberId,
+                                           @Nullable MemberDto.Request updateRequest) {
         Member member = getUserEntityById(memberId);
 
         if (updateRequest.getNickname() != null)
@@ -70,39 +95,10 @@ public class MemberService {
 
         return MemberDto.Response.fromEntity(memberRepository.save(member));
     }
-
-    @Transactional(readOnly = true)
-    private Member getMemberEntityByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new GreenException(WRONG_EMAIL));
+    @Transactional
+    public void updateMemberImage(Long userId, String uuid) throws IOException {
+        Member member = getUserEntityById(userId);
+        member.setImage(uuid);
+        memberRepository.save(member);
     }
-    @Transactional(readOnly = true)
-    private Member getUserEntityById(Long userId) {
-        return memberRepository.findById(userId)
-                .orElseThrow(() -> new GreenException(NO_MEMBER));
-    }
-    public MemberDto.Response getMemberDetail(Long memberId) {
-        return MemberDto.Response.fromEntity(getUserEntityById(memberId));
-    }
-    public List<MemberDto.Response> getAllMembers() {
-        return memberRepository.findAll()
-                .stream()
-                .map(MemberDto.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-
-//    @Transactional
-//    public S3Dto.ImageUrls updateUserImage(Long userId, String imageURL) {
-//        User user = getUserEntityById(userId);
-//        String prevImage = user.getInfo();
-//        user.setInfo(imageURL);
-//        return S3Dto.ImageUrls.builder()
-//                .newImage(userRepository.save(user).getInfo())
-//                .deleteImage(prevImage)
-//                .build();
-//    }
-//    public String getUserImageURL(Long userId){
-//        return getUserEntityById(userId).getInfo();
-//    }
 }

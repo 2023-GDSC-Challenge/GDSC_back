@@ -10,6 +10,9 @@ dependencies {
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.jetbrains:annotations:23.0.0'
+	// for GCP Storage
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.5.RELEASE'
 
 	compileOnly 'org.projectlombok:lombok'
 

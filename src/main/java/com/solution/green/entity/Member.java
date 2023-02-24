@@ -39,5 +39,8 @@ public class Member implements Serializable {
     @Column(name = "member_residence", length = 100, nullable = true)
     private String residence;
 
+    @Column(name = "member_image", nullable = true)
+    private String image;
+
     // TODO - AuditingEntityListener 사용해야함
 }

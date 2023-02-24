@@ -37,7 +37,7 @@ public class MemberController {
         return memberService.getMemberDetail(memberId);
     }
 
-    @GetMapping("/getUserImage/{memberId}")
+    @GetMapping("/get-user-image/{memberId}")
     public String getUserImage(@PathVariable final Long userId) {
         return "https://storage.googleapis.com/eco-reward-bucket/" +
                 memberService.getUserImageURL(userId);

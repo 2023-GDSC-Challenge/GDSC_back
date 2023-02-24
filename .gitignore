@@ -5,6 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 resources/serviceAccountKey.json
+resources/gcpBucketAccessKey.json
 resources/application.yml
 
 ### STS ###

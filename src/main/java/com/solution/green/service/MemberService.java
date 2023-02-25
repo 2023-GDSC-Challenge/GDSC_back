@@ -30,7 +30,7 @@ public class MemberService {
                                     .email(request.getEmail())
                                     .nickname(request.getNickname())
                                     .password(request.getPassword())
-                                    .residence(request.getResidence())
+                                    .title(request.getResidence())
                                     .build()));
         else throw new GreenException(ALREADY_REGISTERED);
     }
@@ -91,7 +91,7 @@ public class MemberService {
         if (updateRequest.getPassword() != null)
             member.setPassword(updateRequest.getPassword());
         if (updateRequest.getResidence() != null)
-            member.setResidence(updateRequest.getResidence());
+            member.setTitle(updateRequest.getResidence());
 
         return MemberDto.Response.fromEntity(memberRepository.save(member));
     }

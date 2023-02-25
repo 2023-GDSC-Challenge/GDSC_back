@@ -55,7 +55,7 @@ public class MemberDto {
                     .nickname(member.getNickname())
                     .email(member.getEmail())
                     .password(member.getPassword())
-                    .residence(member.getResidence())
+                    .residence(member.getTitle())
                     .build();
         }
     }

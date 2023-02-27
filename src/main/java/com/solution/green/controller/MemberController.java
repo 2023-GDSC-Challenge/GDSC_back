@@ -45,7 +45,7 @@ public class MemberController {
 
     @PatchMapping("/update-member-image/{memberId}")
     public String updateMemberImage(@PathVariable final Long memberId,
-                                    @RequestPart(value="file") MultipartFile file)
+                                    @RequestPart(value = "file") MultipartFile file)
             throws IOException {
         String uuid = gcsService.uploadImage(file);
         memberService.updateMemberImage(memberId, uuid);

@@ -1,18 +1,12 @@
 package com.solution.green.service;
 
 import com.solution.green.dto.CategoryDto;
-import com.solution.green.dto.MemCateDto;
-import com.solution.green.entity.MemberCategory;
 import com.solution.green.exception.GreenException;
-import com.solution.green.repository.CategoryRepository;
-import com.solution.green.repository.MemCateRepository;
-import com.solution.green.repository.MemDoRepository;
-import com.solution.green.repository.MemberRepository;
+import com.solution.green.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,27 +18,37 @@ public class MemCateService {
     private final MemCateRepository memCateRepository;
     private final MemDoRepository memDoRepository;
     private final CategoryRepository categoryRepository;
-    // TODO - 멤버가 카테고리에 대해 어떻게 평가했는지 get
+    private final QuestRepository questRepository;
 
-    @Transactional
-    public void getMemberCategory(Long memberId) {
+    public List<CategoryDto.Home> getMemberCategoryHome(Long memberId) {
         List<CategoryDto.Home> list = getCateHomeDtoList(memberId);
-        for(CategoryDto.Home cate : list) {
+        for (CategoryDto.Home cate : list)
+            cate.setAchieveRate(setAchieveRateFromCateId(cate.getId()));
+        return list;
+    }
 
-        }
+
+    private Double setAchieveRateFromCateId(Long categoryId) {
+        return Double.valueOf(getDoneQuestPerCategory(categoryId)) /
+                Double.valueOf(getQuestNumPerCategory(categoryId)) * 100;
     }
-    private Double setAchieveRate(Long categoryId) {
-        return null;
-    }
+
     @Transactional(readOnly = true)
-    public Long getQuestNumPerCategory(Long categoryId) {
-        return memDoRepository.countByQuest_SubCategory_Category(
+    public Long getDoneQuestPerCategory(Long categoryId) {
+        return memDoRepository.countByQuest_SubCategory_CategoryAndStance(
                 categoryRepository.findById(categoryId)
-                        .orElseThrow(() -> new GreenException(NO_CATEGORY))
+                        .orElseThrow(() -> new GreenException(NO_CATEGORY)),
+                2 // means done (0: 찜 | 1: ing)
         );
     }
+
     @Transactional(readOnly = true)
-    private List<CategoryDto.Home> getCateHomeDtoList(Long memberId){
+    public Long getQuestNumPerCategory(Long categoryId) {
+        return questRepository.countBySubCategory_Category_Id(categoryId);
+    }
+
+    @Transactional(readOnly = true)
+    private List<CategoryDto.Home> getCateHomeDtoList(Long memberId) {
         return memCateRepository.findByMember_IdOrderByPriorityAsc(memberId)
                 .stream()
                 .map(CategoryDto.Home::fromEntity)

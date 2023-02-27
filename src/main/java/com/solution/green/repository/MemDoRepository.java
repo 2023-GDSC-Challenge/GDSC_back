@@ -5,5 +5,5 @@ import com.solution.green.entity.MemberDo;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MemDoRepository extends JpaRepository<MemberDo, Long> {
-    long countByQuest_SubCategory_Category(Category category);
+    long countByQuest_SubCategory_CategoryAndStance(Category category, int stance);
 }

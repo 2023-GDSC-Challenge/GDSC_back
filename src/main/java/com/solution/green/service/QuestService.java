@@ -1,33 +1,28 @@
 package com.solution.green.service;
 
-import com.solution.green.dto.MemberDto;
-import com.solution.green.entity.Member;
 import com.solution.green.entity.SubCategories;
-import com.solution.green.exception.GreenException;
-import com.solution.green.repository.MemberRepository;
+import com.solution.green.repository.QuestRepository;
 import com.solution.green.repository.SubCateRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.solution.green.code.GreenErrorCode.ALREADY_REGISTERED;
 
 @Service
 @RequiredArgsConstructor
 public class QuestService {
     private final SubCateRepository subCateRepository;
+    private final QuestRepository questRepository;
 
     // TODO - 각 카테고리별로 몇개 있는지 카운트하는 함수
-    @Transactional
-    public void getQuestNumPerCategory(Long categoryId) {
-
+    @Transactional(readOnly = true)
+    public Long getQuestNumPerCategory(Long categoryId) {
+        return questRepository.countBySubCategory_Category_Id(categoryId);
     }
 
-    // TODO - 각 카테고리 에 해당하는 subcategory 리턴
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true) // 사용 보류
     public List<SubCategories> getSubCategoriesBelongCategory(Long categoryId) {
         return subCateRepository.findByCategory_Id(categoryId);
     }

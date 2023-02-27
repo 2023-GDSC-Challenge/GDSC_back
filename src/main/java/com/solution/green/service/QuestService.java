@@ -16,7 +16,6 @@ public class QuestService {
     private final SubCateRepository subCateRepository;
     private final QuestRepository questRepository;
 
-    // TODO - 각 카테고리별로 몇개 있는지 카운트하는 함수
     @Transactional(readOnly = true)
     public Long getQuestNumPerCategory(Long categoryId) {
         return questRepository.countBySubCategory_Category_Id(categoryId);

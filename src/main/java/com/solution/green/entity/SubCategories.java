@@ -13,16 +13,17 @@ import java.io.Serializable;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "categories")
-public class Category implements Serializable {
+@Table(name = "sub_categories")
+public class SubCategories implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cate_id", length = 20)
+    @Column(name = "sub_cate_id", length = 20)
     private Long id;
-    @Column(name = "cate_name", length = 50, nullable = false, unique = true)
+    @Column(name = "sub_cate_name", length = 50, nullable = false)
     private String name;
-    @Column(name = "cate_icon", nullable = true)
-    private String image;
+    @ManyToOne
+    @JoinColumn(name = "parent_cate_id", referencedColumnName = "cate_id")
+    private Category category;
     // TODO - AuditingEntityListener 사용해야함
 }

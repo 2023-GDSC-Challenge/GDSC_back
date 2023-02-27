@@ -18,7 +18,7 @@ public class MemberCategory implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", length = 20)
+    @Column(name = "mem_cate_id", length = 20)
     private Long id;
 
     @ManyToOne
@@ -26,8 +26,18 @@ public class MemberCategory implements Serializable {
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "category_id")
-    private Category category;
+    @JoinColumn(name = "cate_id_1", referencedColumnName = "cate_id")
+    private Category firstCategory;
+
+    @ManyToOne
+    @JoinColumn(name = "cate_id_2", referencedColumnName = "cate_id")
+    private Category secondCategory;
+    @ManyToOne
+    @JoinColumn(name = "cate_id_3", referencedColumnName = "cate_id")
+    private Category thirdCategory;
+    @ManyToOne
+    @JoinColumn(name = "cate_id_4", referencedColumnName = "cate_id")
+    private Category fourthCategory;
 
     // TODO - AuditingEntityListener 사용해야함
 }

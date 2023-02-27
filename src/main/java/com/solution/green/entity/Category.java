@@ -23,6 +23,6 @@ public class Category implements Serializable {
     @Column(name = "cate_name", length = 50, nullable = false, unique = true)
     private String name;
     @Column(name = "cate_icon", nullable = true)
-    private String image;
+    private String icon;
     // TODO - AuditingEntityListener 사용해야함
 }

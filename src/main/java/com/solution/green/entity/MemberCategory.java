@@ -26,18 +26,10 @@ public class MemberCategory implements Serializable {
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "cate_id_1", referencedColumnName = "cate_id")
-    private Category firstCategory;
-
-    @ManyToOne
-    @JoinColumn(name = "cate_id_2", referencedColumnName = "cate_id")
-    private Category secondCategory;
-    @ManyToOne
-    @JoinColumn(name = "cate_id_3", referencedColumnName = "cate_id")
-    private Category thirdCategory;
-    @ManyToOne
-    @JoinColumn(name = "cate_id_4", referencedColumnName = "cate_id")
-    private Category fourthCategory;
+    @JoinColumn(name = "cate_id", referencedColumnName = "cate_id")
+    private Category category;
+    @Column(name = "priority", length = 10)
+    private Integer priority;
 
     // TODO - AuditingEntityListener 사용해야함
 }

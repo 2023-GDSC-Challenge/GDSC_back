@@ -36,4 +36,9 @@ public class QuestController {
             @Valid @RequestBody QuestDto.Request request) {
         return questService.createQuest(request);
     }
+
+    @GetMapping("/getQuestDetailView/{questId}")
+    public QuestDto.DetailView getQuestDetailView(@PathVariable final Long questId) {
+        return questService.getQuestDetailView(questId);
+    }
 }

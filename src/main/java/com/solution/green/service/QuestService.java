@@ -1,11 +1,13 @@
 package com.solution.green.service;
 
 import com.google.common.collect.Lists;
+import com.solution.green.code.GreenErrorCode;
 import com.solution.green.dto.QuestDto;
 import com.solution.green.entity.MemberCategory;
 import com.solution.green.entity.MemberDo;
 import com.solution.green.entity.Quest;
 import com.solution.green.entity.SubCategories;
+import com.solution.green.exception.GreenException;
 import com.solution.green.repository.MemCateRepository;
 import com.solution.green.repository.MemDoRepository;
 import com.solution.green.repository.QuestRepository;
@@ -18,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.solution.green.code.GreenErrorCode.NO_QUEST;
 
 
 @Service
@@ -116,5 +120,12 @@ public class QuestService {
             editList.add(listView);
         }
         return editList;
+    }
+
+    public QuestDto.DetailView getQuestDetailView(Long questId) {
+        return QuestDto.DetailView.fromEntity(
+                questRepository.findById(questId)
+                        .orElseThrow(() -> new GreenException(NO_QUEST))
+        );
     }
 }

@@ -24,6 +24,6 @@ public class MemDoService {
     }
     @Transactional(readOnly = true)
     public List<MemDoDto.My> getMyQuestList(Long memberId, int stance) {
-        return memDoRepository.findByMember_IdAndStance(memberId, stance);
+        return memDoRepository.findByMember_IdAndStanceOrderByDueDateAsc(memberId, stance);
     }
 }

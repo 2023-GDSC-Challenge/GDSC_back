@@ -3,7 +3,7 @@ package com.solution.green.controller;
 import com.solution.green.dto.MemberDto;
 import com.solution.green.service.GCSService;
 import com.solution.green.service.MemberService;
-import lombok.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

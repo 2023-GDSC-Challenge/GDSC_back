@@ -10,7 +10,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,38 +40,26 @@ public class MemberService {
             return MemberDto.Response.fromEntity(entity);
         else throw new GreenException(WRONG_PASSWORD);
     }
+
     @Transactional(readOnly = true)
     public boolean validateIsEmailRegistered(@NonNull String email) {
         return memberRepository.existsByEmail(email);
     }
 
-    @Transactional
-    public void deleteMember(Long memberId) {
-        memberRepository.deleteById(memberId);
-    }
-
-    public String getUserImageURL(Long userId){
+    public String getUserImageURL(Long userId) {
         return getUserEntityById(userId).getImage();
     }
+
     public MemberDto.Response getMemberDetail(Long memberId) {
         return MemberDto.Response.fromEntity(getUserEntityById(memberId));
     }
+
     @Transactional(readOnly = true)
     public List<MemberDto.Response> getAllMembers() {
         return memberRepository.findAll()
                 .stream()
                 .map(MemberDto.Response::fromEntity)
                 .collect(Collectors.toList());
-    }
-    @Transactional(readOnly = true)
-    private Member getMemberEntityByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new GreenException(WRONG_EMAIL));
-    }
-    @Transactional(readOnly = true)
-    private Member getUserEntityById(Long userId) {
-        return memberRepository.findById(userId)
-                .orElseThrow(() -> new GreenException(NO_MEMBER));
     }
 
     @Transactional
@@ -95,10 +82,28 @@ public class MemberService {
 
         return MemberDto.Response.fromEntity(memberRepository.save(member));
     }
+
     @Transactional
     public void updateMemberImage(Long userId, String uuid) {
         Member member = getUserEntityById(userId);
         member.setImage(uuid);
         memberRepository.save(member);
+    }
+
+    @Transactional
+    public void deleteMember(Long memberId) {
+        memberRepository.deleteById(memberId);
+    }
+
+    @Transactional(readOnly = true)
+    private Member getMemberEntityByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GreenException(WRONG_EMAIL));
+    }
+
+    @Transactional(readOnly = true)
+    private Member getUserEntityById(Long userId) {
+        return memberRepository.findById(userId)
+                .orElseThrow(() -> new GreenException(NO_MEMBER));
     }
 }

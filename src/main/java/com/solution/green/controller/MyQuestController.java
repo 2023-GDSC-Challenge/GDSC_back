@@ -25,14 +25,18 @@ public class MyQuestController {
     private final GCSService gcsService;
     private final CertificateService certificateService;
 
+    // TODO - 퀘스트 완료했을 때 완료 처리하는 메소드
+    // TODO - 퀘스트 포기하는 메소드
     @GetMapping("/getMyQuestNotYetList/{memberId}")
     public List<MemDoDto.My> getMyQuestNotYetList(@PathVariable final Long memberId) {
         return memDoService.getMyQuestNotYetList(memberId);
     }
+
     @GetMapping("/getMyQuestIngList/{memberId}")
     public List<MemDoDto.My> getMyQuestIngList(@PathVariable final Long memberId) {
         return memDoService.getMyQuestIngList(memberId);
     }
+
     @GetMapping("/getMyQuestDoneList/{memberId}")
     public List<MemDoDto.My> getMyQuestDoneList(@PathVariable final Long memberId) {
         return memDoService.getMyQuestDoneList(memberId);
@@ -44,6 +48,12 @@ public class MyQuestController {
         return memDoService.getMyQuestDetailView(memberDoId);
     }
 
+    @GetMapping("/getCertificateImages/{memberDoId}")
+    public List<CertificateDto.DetailView> getCertificateImages(
+            @PathVariable final Long memberDoId) {
+        return certificateService.getCertificateImages(memberDoId);
+    }
+
     @PatchMapping("/uploadCertificateImage/{memberDoId}")
     public String uploadCertificateImage(
             @PathVariable final Long memberDoId,
@@ -52,11 +62,5 @@ public class MyQuestController {
         String uuid = gcsService.uploadImage(file);
         certificateService.updateCertificateImage(memberDoId, uuid);
         return URL_PREFIX.getDescription() + uuid;
-    }
-
-    @GetMapping("/getCertificateImages/{memberDoId}")
-    public List<CertificateDto.DetailView> getCertificateImages(
-            @PathVariable final Long memberDoId) {
-        return certificateService.getCertificateImages(memberDoId);
     }
 }

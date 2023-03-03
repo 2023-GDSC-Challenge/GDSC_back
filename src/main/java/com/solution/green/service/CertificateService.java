@@ -1,10 +1,8 @@
 package com.solution.green.service;
 
-import com.solution.green.code.GreenErrorCode;
 import com.solution.green.dto.CertificateDto;
 import com.solution.green.entity.CertificateImage;
 import com.solution.green.exception.GreenException;
-import com.solution.green.repository.CategoryRepository;
 import com.solution.green.repository.CertificateImageRepository;
 import com.solution.green.repository.MemDoRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +44,7 @@ public class CertificateService {
                         .map(CertificateDto.DetailView::fromEntity)
                         .collect(Collectors.toList());
         List<CertificateDto.DetailView> finalList = new ArrayList<>();
-        for (CertificateDto.DetailView dto: list) {
+        for (CertificateDto.DetailView dto : list) {
             dto.setImage(URL_PREFIX.getDescription() + dto.getImage());
             finalList.add(dto);
         }

@@ -1,7 +1,6 @@
 package com.solution.green.service;
 
 import com.google.common.collect.Lists;
-import com.solution.green.code.GreenErrorCode;
 import com.solution.green.dto.QuestDto;
 import com.solution.green.entity.MemberCategory;
 import com.solution.green.entity.MemberDo;
@@ -32,15 +31,9 @@ public class QuestService {
     private final MemDoRepository memDoRepository;
     private final MemCateRepository memCateRepository;
 
-    @Transactional(readOnly = true) // 사용 보류
-    public List<SubCategories> getSubCategoriesBelongCategory(Long categoryId) {
-        return subCateRepository.findByCategory_Id(categoryId);
-    }
-
     @Transactional
     public QuestDto.ListView createQuest(QuestDto.Request request) {
-        return QuestDto.ListView.fromEntity(
-                questRepository.save(
+        return QuestDto.ListView.fromEntity(questRepository.save(
                         Quest.builder()
                                 .subCategory(
                                         subCateRepository.findByCategory_IdAndName(
@@ -56,24 +49,46 @@ public class QuestService {
     }
 
     public List<QuestDto.ListView> getQuestNotMyQuestList(Long memberId) {
-        // TODO - member 가 myQuest 에 추가 안한 리스트만 뽑기
+        // member 가 myQuest 에 추가 안한 리스트만 뽑기
+        List<QuestDto.ListView> list = getQuestList(memberId);
+        // 그 리스트를 사용자 수에 따라 sort
+        List<QuestDto.ListView> editList1 = setNowChallenger(list);
+        Collections.sort(editList1, (d1, d2) -> d2.getChallenger() - d1.getChallenger());
+        // 정렬된 리스트를 1/3 으로 분할
+        List<List<QuestDto.ListView>> editList2 = Lists.partition(editList1, editList1.size() / 3);
+        // 분할한 리스트 1) 카테고리에 따라 분류 2) 우선순위에 따라 정렬
+        return setListToPriorityCateOrder(memberId, editList2);
+    }
+
+    @Transactional(readOnly = true)
+    public QuestDto.DetailView getQuestDetailView(Long questId) {
+        return QuestDto.DetailView.fromEntity(questRepository.findById(questId)
+                .orElseThrow(() -> new GreenException(NO_QUEST)));
+    }
+
+    @Transactional(readOnly = true)
+    private List<QuestDto.ListView> getQuestList(Long memberId) {
         List<QuestDto.ListView> list = questRepository.findAll().stream()
                 .map(QuestDto.ListView::fromEntity).collect(Collectors.toList());
         List<Long> questIdList = getQuestIdListFromMemDoDto(memberId);
         List<QuestDto.ListView> finalList = new ArrayList<>();
-        for (QuestDto.ListView quest:list)
+        for (QuestDto.ListView quest : list)
             if (!questIdList.contains(quest.getQuestId())) finalList.add(quest);
-        // TODO - 그 리스트를 사용자 수에 따라 sort
-        List<QuestDto.ListView> editList1 = setNowChallenger(finalList);
-        Collections.sort(editList1, (d1, d2) -> d2.getChallenger() - d1.getChallenger());
-        // TODO - 정렬된 리스트를 1/3 으로 분할
-        List<List<QuestDto.ListView>> editList2 = Lists.partition(editList1, editList1.size() / 3);
-        // TODO - 분할된 리스트를 카테고리에 따라 분류
-        // TODO - 분류한 카테고리를 우선순위에 맞게 수정
-        // TODO - 리스트 리턴
-        return setListToPriorityCateOrder(memberId, editList2);
+        return finalList;
     }
 
+    @Transactional(readOnly = true) // 사용 보류
+    public List<SubCategories> getSubCategoriesBelongCategory(Long categoryId) {
+        return subCateRepository.findByCategory_Id(categoryId);
+    }
+
+    private static boolean isPriorityCateEqualsQuestCate(
+            List<MemberCategory> priority, QuestDto.ListView quest, int order) {
+        return priority.get(order).getCategory().getId()
+                .equals(quest.getCategoryDto().getCategoryId());
+    }
+
+    @Transactional(readOnly = true)
     private List<Long> getQuestIdListFromMemDoDto(Long memberId) {
         List<MemberDo> list = memDoRepository.findByMember_Id(memberId);
         List<Long> questIdList = new ArrayList<>();
@@ -82,10 +97,13 @@ public class QuestService {
         return questIdList;
     }
 
+    @Transactional(readOnly = true)
     private List<QuestDto.ListView> setListToPriorityCateOrder(Long memberId, List<List<QuestDto.ListView>> editList2) {
         List<QuestDto.ListView> finalList = new ArrayList<>();
-        List<MemberCategory> priority = memCateRepository.findByMember_IdOrderByPriorityAsc(memberId);
+        List<MemberCategory> priority =
+                memCateRepository.findByMember_IdOrderByPriorityAsc(memberId);
         for (List<QuestDto.ListView> tmpList : editList2) {
+            // 분할된 리스트를 카테고리에 따라 분류
             List<QuestDto.ListView> first = new ArrayList<>();
             List<QuestDto.ListView> second = new ArrayList<>();
             List<QuestDto.ListView> third = new ArrayList<>();
@@ -99,33 +117,24 @@ public class QuestService {
                     third.add(quest);
                 else if (isPriorityCateEqualsQuestCate(priority, quest, 3))
                     fourth.add(quest);
+            // 분류한 카테고리를 우선순위에 맞게 수정
             finalList.addAll(first);
             finalList.addAll(second);
             finalList.addAll(third);
             finalList.addAll(fourth);
         }
-        return finalList;
+        return finalList; // 리스트 리턴
     }
 
-    private static boolean isPriorityCateEqualsQuestCate(
-            List<MemberCategory> priority, QuestDto.ListView quest, int order) {
-        return priority.get(order).getCategory().getId()
-                .equals(quest.getCategoryDto().getCategoryId());
-    }
-
+    @Transactional(readOnly = true)
     private List<QuestDto.ListView> setNowChallenger(List<QuestDto.ListView> list) {
         List<QuestDto.ListView> editList = new ArrayList<>();
         for (QuestDto.ListView listView : list) {
-            listView.setChallenger((int) memDoRepository.countByQuest_Id(listView.getQuestId()));
+            listView.setChallenger(
+                    (int) memDoRepository.countByQuest_Id(listView.getQuestId())
+            );
             editList.add(listView);
         }
         return editList;
-    }
-
-    public QuestDto.DetailView getQuestDetailView(Long questId) {
-        return QuestDto.DetailView.fromEntity(
-                questRepository.findById(questId)
-                        .orElseThrow(() -> new GreenException(NO_QUEST))
-        );
     }
 }

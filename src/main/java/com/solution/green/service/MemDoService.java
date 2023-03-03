@@ -26,44 +26,42 @@ public class MemDoService {
     private final QuestRepository questRepository;
     private final MemberRepository memberRepository;
 
-    public List<MemDoDto.My> getMyQuestNotYetList(Long memberId) {
-        return getMyQuestList(memberId, 0);
-    }
-    public List<MemDoDto.My> getMyQuestIngList(Long memberId) {
-        return getMyQuestList(memberId, 1);
-    }
-    public List<MemDoDto.My> getMyQuestDoneList(Long memberId) {
-        return getMyQuestList(memberId, 2);
-    }
-    @Transactional(readOnly = true)
-    public List<MemDoDto.My> getMyQuestList(Long memberId, int stance) {
-        return memDoRepository.findByMember_IdAndStanceOrderByDueDateAsc(memberId, stance)
-                .stream()
-                .map(MemDoDto.My::fromEntity)
-                .collect(Collectors.toList());
-    }
     @Transactional
     public MemDoDto.My addToMyQuest(Long memberId, Long questId) {
         Date now = new Date();
         updateQuestChallenger(questId);
-        return MemDoDto.My.fromEntity(
-                memDoRepository.save(
-                        MemberDo.builder()
-                                .quest(getQuestEntity(questId))
-                                .member(memberRepository.findById(memberId)
-                                        .orElseThrow(() -> new GreenException(NO_MEMBER)))
-                                .startDate(now)
-                                .stance(1)
-                                .dueDate(setDueDate(now, questId))
-                                .build()
+        return MemDoDto.My.fromEntity(memDoRepository.save(
+                MemberDo.builder()
+                        .quest(getQuestEntity(questId))
+                        .member(memberRepository.findById(memberId)
+                                .orElseThrow(() -> new GreenException(NO_MEMBER)))
+                        .startDate(now)
+                        .stance(1)
+                        .dueDate(setDueDate(now, questId))
+                        .build()
                 )
         );
     }
 
-    private void updateQuestChallenger(Long questId) {
-        Quest quest = getQuestEntity(questId);
-        quest.setChallenger(quest.getChallenger()+1);
-        questRepository.save(quest);
+    public List<MemDoDto.My> getMyQuestNotYetList(Long memberId) {
+        return getMyQuestList(memberId, 0);
+    }
+
+    public List<MemDoDto.My> getMyQuestIngList(Long memberId) {
+        return getMyQuestList(memberId, 1);
+    }
+
+    public List<MemDoDto.My> getMyQuestDoneList(Long memberId) {
+        return getMyQuestList(memberId, 2);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemDoDto.My> getMyQuestList(Long memberId, int stance) {
+        return memDoRepository
+                .findByMember_IdAndStanceOrderByDueDateAsc(memberId, stance)
+                .stream()
+                .map(MemDoDto.My::fromEntity)
+                .collect(Collectors.toList());
     }
 
     private Date setDueDate(Date now, Long questId) {
@@ -72,12 +70,21 @@ public class MemDoService {
         cal.add(Calendar.DATE, getQuestEntity(questId).getTimeLimit());
         return new Date(cal.getTimeInMillis());
     }
+
+    @Transactional
+    private void updateQuestChallenger(Long questId) {
+        Quest quest = getQuestEntity(questId);
+        quest.setChallenger(quest.getChallenger() + 1);
+        questRepository.save(quest);
+    }
+
     @Transactional(readOnly = true)
     private Quest getQuestEntity(Long questId) {
         return questRepository.findById(questId)
                 .orElseThrow(() -> new GreenException(NO_QUEST));
     }
 
+    @Transactional(readOnly = true)
     public MemDoDto.DetailView getMyQuestDetailView(Long memberDoId) {
         return MemDoDto.DetailView.fromEntity(
                 memDoRepository.findById(memberDoId)

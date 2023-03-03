@@ -2,7 +2,10 @@ package com.solution.green.service;
 
 import com.solution.green.dto.CategoryDto;
 import com.solution.green.exception.GreenException;
-import com.solution.green.repository.*;
+import com.solution.green.repository.CategoryRepository;
+import com.solution.green.repository.MemCateRepository;
+import com.solution.green.repository.MemDoRepository;
+import com.solution.green.repository.QuestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,12 +30,11 @@ public class MemCateService {
         return list;
     }
 
-
     private Double setAchieveRateFromCateId(Long categoryId) {
         Double doneCount = Double.valueOf(getDoneQuestPerCategory(categoryId));
-        if (doneCount.equals(Double.valueOf(0)))
-            return Double.valueOf(0);
-        else return doneCount / Double.valueOf(getQuestNumPerCategory(categoryId)) * 100;
+        if (doneCount.equals(Double.valueOf(0))) return Double.valueOf(0);
+        else
+            return doneCount / Double.valueOf(getQuestNumPerCategory(categoryId)) * 100;
     }
 
     @Transactional(readOnly = true)

@@ -20,25 +20,26 @@ public class QuestController {
     private final QuestService questService;
     private final MemDoService memDoService;
 
-    @GetMapping("/getQuestNotMyQuestList/{memberId}")
-    public List<QuestDto.ListView> getQuestNotMyQuestList(@PathVariable final Long memberId) {
-        return questService.getQuestNotMyQuestList(memberId);
-    }
-
-    @PostMapping("/add-to-my-quest/{memberId}/{questId}")
-    public MemDoDto.My addToMyQuest(@PathVariable final Long memberId,
-                                    @PathVariable final Long questId) {
-        return memDoService.addToMyQuest(memberId, questId);
-    }
-
     @PostMapping("/create-quest") // only for back-end
     public QuestDto.ListView createQuest(
             @Valid @RequestBody QuestDto.Request request) {
         return questService.createQuest(request);
     }
 
+    @GetMapping("/getQuestNotMyQuestList/{memberId}")
+    public List<QuestDto.ListView> getQuestNotMyQuestList(
+            @PathVariable final Long memberId) {
+        return questService.getQuestNotMyQuestList(memberId);
+    }
+
     @GetMapping("/getQuestDetailView/{questId}")
     public QuestDto.DetailView getQuestDetailView(@PathVariable final Long questId) {
         return questService.getQuestDetailView(questId);
+    }
+
+    @PostMapping("/add-to-my-quest/{memberId}/{questId}")
+    public MemDoDto.My addToMyQuest(@PathVariable final Long memberId,
+                                    @PathVariable final Long questId) {
+        return memDoService.addToMyQuest(memberId, questId);
     }
 }

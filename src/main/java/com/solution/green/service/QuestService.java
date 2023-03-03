@@ -61,7 +61,7 @@ public class QuestService {
             if (!questIdList.contains(quest.getQuestId())) finalList.add(quest);
         // TODO - 그 리스트를 사용자 수에 따라 sort
         List<QuestDto.Detail> editList1 = setNowChallenger(finalList);
-        Collections.sort(editList1, (d1, d2) -> d2.getNowChallenger() - d1.getNowChallenger());
+        Collections.sort(editList1, (d1, d2) -> d2.getChallenger() - d1.getChallenger());
         // TODO - 정렬된 리스트를 1/3 으로 분할
         List<List<QuestDto.Detail>> editList2 = Lists.partition(editList1, editList1.size() / 3);
         // TODO - 분할된 리스트를 카테고리에 따라 분류
@@ -112,7 +112,7 @@ public class QuestService {
     private List<QuestDto.Detail> setNowChallenger(List<QuestDto.Detail> list) {
         List<QuestDto.Detail> editList = new ArrayList<>();
         for (QuestDto.Detail detail : list) {
-            detail.setNowChallenger((int) memDoRepository.countByQuest_Id(detail.getQuestId()));
+            detail.setChallenger((int) memDoRepository.countByQuest_Id(detail.getQuestId()));
             editList.add(detail);
         }
         return editList;

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.solution.green.code.GreenErrorCode.NO_MEMBER;
 import static com.solution.green.code.GreenErrorCode.NO_QUEST;
@@ -36,11 +37,15 @@ public class MemDoService {
     }
     @Transactional(readOnly = true)
     public List<MemDoDto.My> getMyQuestList(Long memberId, int stance) {
-        return memDoRepository.findByMember_IdAndStanceOrderByDueDateAsc(memberId, stance);
+        return memDoRepository.findByMember_IdAndStanceOrderByDueDateAsc(memberId, stance)
+                .stream()
+                .map(MemDoDto.My::fromEntity)
+                .collect(Collectors.toList());
     }
     @Transactional
     public MemDoDto.My addToMyQuest(Long memberId, Long questId) {
         Date now = new Date();
+        updateQuestChallenger(questId);
         return MemDoDto.My.fromEntity(
                 memDoRepository.save(
                         MemberDo.builder()
@@ -53,6 +58,12 @@ public class MemDoService {
                                 .build()
                 )
         );
+    }
+
+    private void updateQuestChallenger(Long questId) {
+        Quest quest = getQuestEntity(questId);
+        quest.setChallenger(quest.getChallenger()+1);
+        questRepository.save(quest);
     }
 
     private Date setDueDate(Date now, Long questId) {

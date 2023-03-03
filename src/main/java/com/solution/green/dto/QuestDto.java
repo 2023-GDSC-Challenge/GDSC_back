@@ -1,6 +1,5 @@
 package com.solution.green.dto;
 
-import com.solution.green.entity.MemberCategory;
 import com.solution.green.entity.MemberDo;
 import com.solution.green.entity.Quest;
 import lombok.*;
@@ -44,7 +43,7 @@ public class QuestDto {
         private Integer timeLimit;
         @Nullable
         @Setter
-        private Integer nowChallenger;
+        private Integer challenger;
 
         public static Detail fromEntity(Quest quest) {
             return Detail.builder()
@@ -55,6 +54,7 @@ public class QuestDto {
                     .reward(quest.getReward())
                     .memo(quest.getMemo())
                     .timeLimit(quest.getTimeLimit())
+                    .challenger(quest.getChallenger())
                     .build();
         }
         public static Detail fromEntity(MemberDo memberDo) {

@@ -37,5 +37,8 @@ public class Quest implements Serializable {
     @Column(name = "quest_time_limit", length = 20, nullable = true)
     private Integer timeLimit;
 
+    @Column(name = "challenger", length = 20, nullable = true)
+    private Integer challenger;
+
     // TODO - AuditingEntityListener 사용해야함
 }

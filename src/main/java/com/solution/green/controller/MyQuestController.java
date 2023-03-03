@@ -28,4 +28,6 @@ public class MyQuestController {
     public List<MemDoDto.My> getMyQuestDoneList(@PathVariable final Long memberId) {
         return memDoService.getMyQuestDoneList(memberId);
     }
+
+
 }

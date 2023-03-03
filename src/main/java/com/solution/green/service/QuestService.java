@@ -34,8 +34,8 @@ public class QuestService {
     }
 
     @Transactional
-    public QuestDto.Detail createQuest(QuestDto.Request request) {
-        return QuestDto.Detail.fromEntity(
+    public QuestDto.ListView createQuest(QuestDto.Request request) {
+        return QuestDto.ListView.fromEntity(
                 questRepository.save(
                         Quest.builder()
                                 .subCategory(
@@ -44,26 +44,26 @@ public class QuestService {
                                                 request.getSubCateName()))
                                 .name(request.getQuestName())
                                 .reward(request.getReward())
-                                .memo(request.getMemo())
+                                .briefing(request.getMemo())
                                 .timeLimit(request.getTimeLimit())
                                 .build()
                 )
         );
     }
 
-    public List<QuestDto.Detail> getQuestNotMyQuestList(Long memberId) {
+    public List<QuestDto.ListView> getQuestNotMyQuestList(Long memberId) {
         // TODO - member 가 myQuest 에 추가 안한 리스트만 뽑기
-        List<QuestDto.Detail> list = questRepository.findAll().stream()
-                .map(QuestDto.Detail::fromEntity).collect(Collectors.toList());
+        List<QuestDto.ListView> list = questRepository.findAll().stream()
+                .map(QuestDto.ListView::fromEntity).collect(Collectors.toList());
         List<Long> questIdList = getQuestIdListFromMemDoDto(memberId);
-        List<QuestDto.Detail> finalList = new ArrayList<>();
-        for (QuestDto.Detail quest:list)
+        List<QuestDto.ListView> finalList = new ArrayList<>();
+        for (QuestDto.ListView quest:list)
             if (!questIdList.contains(quest.getQuestId())) finalList.add(quest);
         // TODO - 그 리스트를 사용자 수에 따라 sort
-        List<QuestDto.Detail> editList1 = setNowChallenger(finalList);
+        List<QuestDto.ListView> editList1 = setNowChallenger(finalList);
         Collections.sort(editList1, (d1, d2) -> d2.getChallenger() - d1.getChallenger());
         // TODO - 정렬된 리스트를 1/3 으로 분할
-        List<List<QuestDto.Detail>> editList2 = Lists.partition(editList1, editList1.size() / 3);
+        List<List<QuestDto.ListView>> editList2 = Lists.partition(editList1, editList1.size() / 3);
         // TODO - 분할된 리스트를 카테고리에 따라 분류
         // TODO - 분류한 카테고리를 우선순위에 맞게 수정
         // TODO - 리스트 리턴
@@ -78,15 +78,15 @@ public class QuestService {
         return questIdList;
     }
 
-    private List<QuestDto.Detail> setListToPriorityCateOrder(Long memberId, List<List<QuestDto.Detail>> editList2) {
-        List<QuestDto.Detail> finalList = new ArrayList<>();
+    private List<QuestDto.ListView> setListToPriorityCateOrder(Long memberId, List<List<QuestDto.ListView>> editList2) {
+        List<QuestDto.ListView> finalList = new ArrayList<>();
         List<MemberCategory> priority = memCateRepository.findByMember_IdOrderByPriorityAsc(memberId);
-        for (List<QuestDto.Detail> tmpList : editList2) {
-            List<QuestDto.Detail> first = new ArrayList<>();
-            List<QuestDto.Detail> second = new ArrayList<>();
-            List<QuestDto.Detail> third = new ArrayList<>();
-            List<QuestDto.Detail> fourth = new ArrayList<>();
-            for (QuestDto.Detail quest : tmpList)
+        for (List<QuestDto.ListView> tmpList : editList2) {
+            List<QuestDto.ListView> first = new ArrayList<>();
+            List<QuestDto.ListView> second = new ArrayList<>();
+            List<QuestDto.ListView> third = new ArrayList<>();
+            List<QuestDto.ListView> fourth = new ArrayList<>();
+            for (QuestDto.ListView quest : tmpList)
                 if (isPriorityCateEqualsQuestCate(priority, quest, 0))
                     first.add(quest);
                 else if (isPriorityCateEqualsQuestCate(priority, quest, 1))
@@ -104,16 +104,16 @@ public class QuestService {
     }
 
     private static boolean isPriorityCateEqualsQuestCate(
-            List<MemberCategory> priority, QuestDto.Detail quest, int order) {
+            List<MemberCategory> priority, QuestDto.ListView quest, int order) {
         return priority.get(order).getCategory().getId()
                 .equals(quest.getCategoryDto().getCategoryId());
     }
 
-    private List<QuestDto.Detail> setNowChallenger(List<QuestDto.Detail> list) {
-        List<QuestDto.Detail> editList = new ArrayList<>();
-        for (QuestDto.Detail detail : list) {
-            detail.setChallenger((int) memDoRepository.countByQuest_Id(detail.getQuestId()));
-            editList.add(detail);
+    private List<QuestDto.ListView> setNowChallenger(List<QuestDto.ListView> list) {
+        List<QuestDto.ListView> editList = new ArrayList<>();
+        for (QuestDto.ListView listView : list) {
+            listView.setChallenger((int) memDoRepository.countByQuest_Id(listView.getQuestId()));
+            editList.add(listView);
         }
         return editList;
     }

@@ -1,7 +1,6 @@
 package com.solution.green.controller;
 
 import com.solution.green.dto.MemDoDto;
-import com.solution.green.dto.MemberDto;
 import com.solution.green.dto.QuestDto;
 import com.solution.green.service.MemDoService;
 import com.solution.green.service.QuestService;
@@ -22,7 +21,7 @@ public class QuestController {
     private final MemDoService memDoService;
 
     @GetMapping("/getQuestNotMyQuestList/{memberId}")
-    public List<QuestDto.Detail> getQuestNotMyQuestList(@PathVariable final Long memberId) {
+    public List<QuestDto.ListView> getQuestNotMyQuestList(@PathVariable final Long memberId) {
         return questService.getQuestNotMyQuestList(memberId);
     }
 
@@ -33,7 +32,7 @@ public class QuestController {
     }
 
     @PostMapping("/create-quest") // only for back-end
-    public QuestDto.Detail createQuest(
+    public QuestDto.ListView createQuest(
             @Valid @RequestBody QuestDto.Request request) {
         return questService.createQuest(request);
     }

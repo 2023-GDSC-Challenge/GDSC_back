@@ -18,7 +18,7 @@ public class MemDoDto {
         @NotNull
         private Long memDoId;
         @NotNull
-        private QuestDto.Detail questDto;
+        private QuestDto.ListView questDto;
         private Date startDate;
         private Date dueDate;
         private Date leftTime; // 프론트에서 직접 계산
@@ -28,7 +28,7 @@ public class MemDoDto {
         public static My fromEntity(MemberDo memberDo) {
             return My.builder()
                     .memDoId(memberDo.getId())
-                    .questDto(QuestDto.Detail.fromEntity(memberDo.getQuest()))
+                    .questDto(QuestDto.ListView.fromEntity(memberDo.getQuest()))
                     .startDate(memberDo.getStartDate())
                     .dueDate(memberDo.getDueDate())
                     .stance(memberDo.getStance())

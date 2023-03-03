@@ -31,8 +31,10 @@ public class Quest implements Serializable {
     @Column(name = "quest_reward", length = 20, nullable = false)
     private Integer reward;
 
-    @Column(name = "memo", length = 200, nullable = true)
-    private String memo;
+    @Column(name = "briefing", length = 200, nullable = true)
+    private String briefing;
+    @Column(name = "information", length = 200, nullable = true)
+    private String information;
 
     @Column(name = "quest_time_limit", length = 20, nullable = true)
     private Integer timeLimit;

@@ -29,7 +29,7 @@ public class QuestDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    public static class Detail {
+    public static class ListView {
         @NotNull
         private Long id;
         @NotNull
@@ -39,25 +39,25 @@ public class QuestDto {
         private SubCateDto.WithParent categoryDto;
         @NotNull
         private Integer reward;
-        private String memo;
+        private String briefing;
         private Integer timeLimit;
         @Nullable
         @Setter
         private Integer challenger;
 
-        public static Detail fromEntity(Quest quest) {
-            return Detail.builder()
+        public static ListView fromEntity(Quest quest) {
+            return ListView.builder()
                     .id(quest.getId())
                     .questName(quest.getName())
                     .questId(quest.getId())
                     .categoryDto(SubCateDto.WithParent.fromEntity(quest.getSubCategory()))
                     .reward(quest.getReward())
-                    .memo(quest.getMemo())
+                    .briefing(quest.getBriefing())
                     .timeLimit(quest.getTimeLimit())
                     .challenger(quest.getChallenger())
                     .build();
         }
-        public static Detail fromEntity(MemberDo memberDo) {
+        public static ListView fromEntity(MemberDo memberDo) {
             Quest quest = memberDo.getQuest();
             return fromEntity(quest);
         }

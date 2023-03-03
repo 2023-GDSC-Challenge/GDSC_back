@@ -29,5 +29,13 @@ public class MyQuestController {
         return memDoService.getMyQuestDoneList(memberId);
     }
 
+    @GetMapping("/getMyQuestDetailView/{memberDoId}")
+    public MemDoDto.DetailView getMyQuestDetailView(
+            @PathVariable final Long memberDoId) {
+        return memDoService.getMyQuestDetailView(memberDoId);
+    }
 
+    // 인증페이지 - 사진 업로드 필요
+    //
+    //+) 인증한 사진 모아둔 갤러리 보여줘야함
 }

@@ -35,4 +35,31 @@ public class MemDoDto {
                     .build();
         }
     }
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class DetailView {
+        // - 디테일 정보
+        //    - 퀘스트 상세설명 attirbute 추가할 것 - DB
+        @NotNull
+        private Long memDoId;
+        @NotNull
+        private QuestDto.DetailView questDto;
+        private Date startDate;
+        private Date dueDate;
+        private Date leftTime; // 프론트에서 직접 계산
+        private int stance;
+        private Double achieveRate; // 보류
+
+        public static DetailView fromEntity(MemberDo memberDo) {
+            return DetailView.builder()
+                    .memDoId(memberDo.getId())
+                    .questDto(QuestDto.DetailView.fromEntity(memberDo.getQuest()))
+                    .startDate(memberDo.getStartDate())
+                    .dueDate(memberDo.getDueDate())
+                    .stance(memberDo.getStance())
+                    .build();
+        }
+    }
 }

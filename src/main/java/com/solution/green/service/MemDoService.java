@@ -77,4 +77,10 @@ public class MemDoService {
         return questRepository.findById(questId)
                 .orElseThrow(() -> new GreenException(NO_QUEST));
     }
+
+    public MemDoDto.DetailView getMyQuestDetailView(Long memberDoId) {
+        return MemDoDto.DetailView.fromEntity(
+                memDoRepository.findById(memberDoId)
+                        .orElseThrow(() -> new GreenException(NO_QUEST)));
+    }
 }

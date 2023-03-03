@@ -62,4 +62,40 @@ public class QuestDto {
             return fromEntity(quest);
         }
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class DetailView {
+        @NotNull
+        private Long id;
+        @NotNull
+        private String questName;
+        private Long questId;
+        @NotNull
+        private SubCateDto.WithParent categoryDto;
+        @NotNull
+        private Integer reward;
+        private String briefing;
+        private String information;
+        private Integer timeLimit;
+        @Nullable
+        @Setter
+        private Integer challenger;
+
+        public static DetailView fromEntity(Quest quest) {
+            return DetailView.builder()
+                    .id(quest.getId())
+                    .questName(quest.getName())
+                    .questId(quest.getId())
+                    .categoryDto(SubCateDto.WithParent.fromEntity(quest.getSubCategory()))
+                    .reward(quest.getReward())
+                    .briefing(quest.getBriefing())
+                    .information(quest.getInformation())
+                    .timeLimit(quest.getTimeLimit())
+                    .challenger(quest.getChallenger())
+                    .build();
+        }
+    }
 }

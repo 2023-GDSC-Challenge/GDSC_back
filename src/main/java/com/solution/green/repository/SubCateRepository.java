@@ -8,5 +8,5 @@ import java.util.List;
 public interface SubCateRepository extends JpaRepository<SubCategories, Long> {
     List<SubCategories> findByCategory_Id(Long id);
 
-    SubCategories findByName(String name);
+    SubCategories findByCategory_IdAndName(Long id, String name);
 }

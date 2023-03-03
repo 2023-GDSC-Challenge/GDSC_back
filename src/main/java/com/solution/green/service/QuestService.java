@@ -27,17 +27,20 @@ public class QuestService {
     private final QuestRepository questRepository;
     private final MemDoRepository memDoRepository;
     private final MemCateRepository memCateRepository;
+
     @Transactional(readOnly = true) // 사용 보류
     public List<SubCategories> getSubCategoriesBelongCategory(Long categoryId) {
         return subCateRepository.findByCategory_Id(categoryId);
     }
+
     @Transactional
     public QuestDto.Detail createQuest(QuestDto.Request request) {
         return QuestDto.Detail.fromEntity(
                 questRepository.save(
                         Quest.builder()
                                 .subCategory(
-                                        subCateRepository.findByName(
+                                        subCateRepository.findByCategory_IdAndName(
+                                                request.getParentCategoryId(),
                                                 request.getSubCateName()))
                                 .name(request.getQuestName())
                                 .reward(request.getReward())
@@ -55,9 +58,9 @@ public class QuestService {
         list.removeAll(memDoRepository.findByMember_Id(memberId));
         // TODO - 그 리스트를 사용자 수에 따라 sort
         List<QuestDto.Detail> editList1 = setNowChallenger(list);
-        Collections.sort(editList1, (d1, d2) -> d2.getNowChallenger() - d1.getNowChallenger() );
+        Collections.sort(editList1, (d1, d2) -> d2.getNowChallenger() - d1.getNowChallenger());
         // TODO - 정렬된 리스트를 1/5 으로 분할
-        List<List<QuestDto.Detail>> editList2 = Lists.partition(editList1, editList1.size()/5);
+        List<List<QuestDto.Detail>> editList2 = Lists.partition(editList1, editList1.size() / 5);
         // TODO - 분할된 리스트를 카테고리에 따라 분류
         // TODO - 분류한 카테고리를 우선순위에 맞게 수정
         // TODO - 리스트 리턴
@@ -67,12 +70,12 @@ public class QuestService {
     private List<QuestDto.Detail> setListToPriorityCateOrder(Long memberId, List<List<QuestDto.Detail>> editList2) {
         List<QuestDto.Detail> finalList = new ArrayList<>();
         List<MemberCategory> priority = memCateRepository.findByMember_IdOrderByPriorityAsc(memberId);
-        for (List<QuestDto.Detail> tmpList: editList2) {
+        for (List<QuestDto.Detail> tmpList : editList2) {
             List<QuestDto.Detail> first = new ArrayList<>();
             List<QuestDto.Detail> second = new ArrayList<>();
             List<QuestDto.Detail> third = new ArrayList<>();
             List<QuestDto.Detail> fourth = new ArrayList<>();
-            for (QuestDto.Detail quest: tmpList)
+            for (QuestDto.Detail quest : tmpList)
                 if (isPriorityCateEqualsQuestCate(priority, quest, 0))
                     first.add(quest);
                 else if (isPriorityCateEqualsQuestCate(priority, quest, 1))
@@ -97,7 +100,7 @@ public class QuestService {
 
     private List<QuestDto.Detail> setNowChallenger(List<QuestDto.Detail> list) {
         List<QuestDto.Detail> editList = new ArrayList<>();
-        for (QuestDto.Detail detail: list) {
+        for (QuestDto.Detail detail : list) {
             detail.setNowChallenger((int) memDoRepository.countByQuest_Id(detail.getQuestId()));
             editList.add(detail);
         }

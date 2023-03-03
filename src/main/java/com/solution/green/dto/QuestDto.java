@@ -17,10 +17,13 @@ public class QuestDto {
         @NotNull
         private String subCateName;
         @NotNull
+        private Long parentCategoryId;
+        @NotNull
         private Integer reward;
         private String memo;
         private Integer timeLimit;
     }
+
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor

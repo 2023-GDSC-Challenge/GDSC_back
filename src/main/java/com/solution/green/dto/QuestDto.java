@@ -13,6 +13,20 @@ public class QuestDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+    public static class Request {
+        @NotNull
+        private String questName;
+        @NotNull
+        private String subCateName;
+        @NotNull
+        private Integer reward;
+        private String memo;
+        private Integer timeLimit;
+    }
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
     public static class Detail {
         @NotNull
         private Long id;

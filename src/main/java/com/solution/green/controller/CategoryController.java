@@ -16,7 +16,6 @@ import java.util.List;
 public class CategoryController {
     private final MemCateService memCateService;
 
-    // TODO - 현재의 멤버가 정한 우선순위에 따라 category 정보를 리턴
     @GetMapping("/getMemberCategory/{memberId}")
     public List<CategoryDto.Home> getMemberCategory(@PathVariable final Long memberId) {
         return memCateService.getMemberCategoryHome(memberId);

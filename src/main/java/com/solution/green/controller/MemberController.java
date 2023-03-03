@@ -21,6 +21,9 @@ public class MemberController {
     private final MemberService memberService;
     private final GCSService gcsService;
 
+    // TODO - 멤버 우선순위 카테고리 create
+    // TODO - 멤버 우선순위 카테고리 update
+
     @PostMapping("/create-member")
     public MemberDto.Response createMember(
             @Valid @RequestBody MemberDto.Request request) {

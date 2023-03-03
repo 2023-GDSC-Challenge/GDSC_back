@@ -29,8 +29,10 @@ public class MemCateService {
 
 
     private Double setAchieveRateFromCateId(Long categoryId) {
-        return Double.valueOf(getDoneQuestPerCategory(categoryId)) /
-                Double.valueOf(getQuestNumPerCategory(categoryId)) * 100;
+        Double doneCount = Double.valueOf(getDoneQuestPerCategory(categoryId));
+        if (doneCount.equals(Double.valueOf(0)))
+            return Double.valueOf(0);
+        else return doneCount / Double.valueOf(getQuestNumPerCategory(categoryId)) * 100;
     }
 
     @Transactional(readOnly = true)

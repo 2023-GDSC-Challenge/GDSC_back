@@ -38,7 +38,7 @@ public class MemDoService {
     public List<MemDoDto.My> getMyQuestList(Long memberId, int stance) {
         return memDoRepository.findByMember_IdAndStanceOrderByDueDateAsc(memberId, stance);
     }
-
+    @Transactional
     public MemDoDto.My addToMyQuest(Long memberId, Long questId) {
         Date now = new Date();
         return MemDoDto.My.fromEntity(
@@ -61,7 +61,7 @@ public class MemDoService {
         cal.add(Calendar.DATE, getQuestEntity(questId).getTimeLimit());
         return new Date(cal.getTimeInMillis());
     }
-
+    @Transactional(readOnly = true)
     private Quest getQuestEntity(Long questId) {
         return questRepository.findById(questId)
                 .orElseThrow(() -> new GreenException(NO_QUEST));

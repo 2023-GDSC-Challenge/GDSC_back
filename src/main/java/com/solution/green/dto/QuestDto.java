@@ -1,10 +1,8 @@
 package com.solution.green.dto;
 
 import com.solution.green.entity.Quest;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
 
@@ -32,17 +30,22 @@ public class QuestDto {
         private Long id;
         @NotNull
         private String questName;
+        private Long questId;
         @NotNull
         private SubCateDto.WithParent categoryDto;
         @NotNull
         private Integer reward;
         private String memo;
         private Integer timeLimit;
+        @Nullable
+        @Setter
+        private Integer nowChallenger;
 
         public static Detail fromEntity(Quest quest) {
             return Detail.builder()
                     .id(quest.getId())
                     .questName(quest.getName())
+                    .questId(quest.getId())
                     .categoryDto(SubCateDto.WithParent.fromEntity(quest.getSubCategory()))
                     .reward(quest.getReward())
                     .memo(quest.getMemo())

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,9 +21,11 @@ public class QuestController {
     private final QuestService questService;
     private final MemDoService memDoService;
 
-    // TODO - 겟리스트 (디폴트로 넘기기)
-    // 디폴트 정렬 순서 ... -> 참여자 수(인기도) & 사용자 관심 순서
-    
+    @GetMapping("/getQuestNotMyQuestList/{memberId}")
+    public List<QuestDto.Detail> getQuestNotMyQuestList(@PathVariable final Long memberId) {
+        return questService.getQuestNotMyQuestList(memberId);
+    }
+
     @PostMapping("/add-to-my-quest/{memberId}/{questId}")
     public MemDoDto.My addToMyQuest(@PathVariable final Long memberId,
                                     @PathVariable final Long questId) {

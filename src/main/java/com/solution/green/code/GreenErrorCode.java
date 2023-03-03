@@ -22,7 +22,7 @@ public enum GreenErrorCode {
     NO_MEMBER(500, "MEMBER-ERR-500", "There is no corresponding MEMBER."),
     NO_CATEGORY(500, "CATEGORY-ERR-500", "There is no corresponding CATEGORY."),
     NO_QUEST(500, "QUEST-ERR-500", "There is no corresponding QUEST."),
-    NO_MANAGER(500, "EVENT-ERR-500","There is no MANAGER for the event."),
+    NO_MEM_DO(500, "MEM_DO-ERR-500","There is no quest that user challenging."),
     NO_SUPERUSER(500, "TRAVEL-SUPERUSER-ERROR", "There is no SuperUser on this trip."),
     NO_TRAVEL(500, "TRAVEL-ERR-500","There is no corresponding TRAVEL."),
     NO_EVENT(500, "EVENT-ERR-500","There is no corresponding EVENT."),

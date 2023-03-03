@@ -96,7 +96,7 @@ public class MemberService {
         return MemberDto.Response.fromEntity(memberRepository.save(member));
     }
     @Transactional
-    public void updateMemberImage(Long userId, String uuid) throws IOException {
+    public void updateMemberImage(Long userId, String uuid) {
         Member member = getUserEntityById(userId);
         member.setImage(uuid);
         memberRepository.save(member);

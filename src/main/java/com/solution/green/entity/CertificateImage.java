@@ -26,5 +26,6 @@ public class CertificateImage {
 
     @Column(name = "submit_date")
     private Date submitDate;
-
+    @Column(name = "image", nullable = true)
+    private String image;
 }

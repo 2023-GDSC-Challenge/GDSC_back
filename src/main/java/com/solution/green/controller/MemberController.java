@@ -12,6 +12,8 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
+import static com.solution.green.code.DatabaseName.URL_PREFIX;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -42,8 +44,7 @@ public class MemberController {
 
     @GetMapping("/get-user-image/{memberId}")
     public String getUserImage(@PathVariable final Long memberId) {
-        return "https://storage.googleapis.com/eco-reward-bucket/" +
-                memberService.getUserImageURL(memberId);
+        return URL_PREFIX.getDescription() + memberService.getUserImageURL(memberId);
     }
 
     @PatchMapping("/update-member-image/{memberId}")
@@ -52,7 +53,7 @@ public class MemberController {
             throws IOException {
         String uuid = gcsService.uploadImage(file);
         memberService.updateMemberImage(memberId, uuid);
-        return "https://storage.googleapis.com/eco-reward-bucket/" + uuid;
+        return URL_PREFIX.getDescription() + uuid;
     }
 
     @PutMapping("/update-member/{memberId}")

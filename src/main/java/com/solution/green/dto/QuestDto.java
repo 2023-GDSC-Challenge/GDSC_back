@@ -1,5 +1,7 @@
 package com.solution.green.dto;
 
+import com.solution.green.entity.MemberCategory;
+import com.solution.green.entity.MemberDo;
 import com.solution.green.entity.Quest;
 import lombok.*;
 import org.springframework.lang.Nullable;
@@ -54,6 +56,10 @@ public class QuestDto {
                     .memo(quest.getMemo())
                     .timeLimit(quest.getTimeLimit())
                     .build();
+        }
+        public static Detail fromEntity(MemberDo memberDo) {
+            Quest quest = memberDo.getQuest();
+            return fromEntity(quest);
         }
     }
 }

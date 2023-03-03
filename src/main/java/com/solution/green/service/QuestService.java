@@ -3,6 +3,7 @@ package com.solution.green.service;
 import com.google.common.collect.Lists;
 import com.solution.green.dto.QuestDto;
 import com.solution.green.entity.MemberCategory;
+import com.solution.green.entity.MemberDo;
 import com.solution.green.entity.Quest;
 import com.solution.green.entity.SubCategories;
 import com.solution.green.repository.MemCateRepository;
@@ -13,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,16 +55,27 @@ public class QuestService {
         // TODO - member 가 myQuest 에 추가 안한 리스트만 뽑기
         List<QuestDto.Detail> list = questRepository.findAll().stream()
                 .map(QuestDto.Detail::fromEntity).collect(Collectors.toList());
-        list.removeAll(memDoRepository.findByMember_Id(memberId));
+        List<Long> questIdList = getQuestIdListFromMemDoDto(memberId);
+        List<QuestDto.Detail> finalList = new ArrayList<>();
+        for (QuestDto.Detail quest:list)
+            if (!questIdList.contains(quest.getQuestId())) finalList.add(quest);
         // TODO - 그 리스트를 사용자 수에 따라 sort
-        List<QuestDto.Detail> editList1 = setNowChallenger(list);
+        List<QuestDto.Detail> editList1 = setNowChallenger(finalList);
         Collections.sort(editList1, (d1, d2) -> d2.getNowChallenger() - d1.getNowChallenger());
-        // TODO - 정렬된 리스트를 1/5 으로 분할
-        List<List<QuestDto.Detail>> editList2 = Lists.partition(editList1, editList1.size() / 5);
+        // TODO - 정렬된 리스트를 1/3 으로 분할
+        List<List<QuestDto.Detail>> editList2 = Lists.partition(editList1, editList1.size() / 3);
         // TODO - 분할된 리스트를 카테고리에 따라 분류
         // TODO - 분류한 카테고리를 우선순위에 맞게 수정
         // TODO - 리스트 리턴
         return setListToPriorityCateOrder(memberId, editList2);
+    }
+
+    private List<Long> getQuestIdListFromMemDoDto(Long memberId) {
+        List<MemberDo> list = memDoRepository.findByMember_Id(memberId);
+        List<Long> questIdList = new ArrayList<>();
+        for (MemberDo memberDo : list)
+            questIdList.add(memberDo.getQuest().getId());
+        return questIdList;
     }
 
     private List<QuestDto.Detail> setListToPriorityCateOrder(Long memberId, List<List<QuestDto.Detail>> editList2) {

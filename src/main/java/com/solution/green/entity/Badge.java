@@ -24,5 +24,11 @@ public class Badge implements Serializable {
     @Column(name = "badge_name", length = 100, nullable = false)
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "cate_id", referencedColumnName = "cate_id", nullable = true)
+    private Category category;
+
+    @Column(name = "achievement", length = 20, nullable = true)
+    private Double achievement;
     // TODO - AuditingEntityListener 사용해야함
 }

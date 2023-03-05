@@ -33,6 +33,10 @@ public class MemberController {
     // TODO - member 정보 리턴하는 메소드에서 title 파트 수정 필요
     // TODO - member entity & dto 수정 필요
 
+    // TODO - 내가 가진 뱃지 리턴하는 메소드
+    // TODO - 뱃지 고르는 메소드
+    // TODO - 뱃지 변경하는 메소드
+
     @PostMapping("/create-member")
     public MemberDto.Response createMember(
             @Valid @RequestBody MemberDto.Request request) {

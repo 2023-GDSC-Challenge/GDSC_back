@@ -15,10 +15,7 @@ import java.io.Serializable;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "badges")
 public class Badge implements Serializable {
-    
-    // TODO - 내가 가진 뱃지 리턴하는 메소드
-    // TODO - 뱃지 고르는 메소드
-    // TODO - 뱃지 변경하는 메소드
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

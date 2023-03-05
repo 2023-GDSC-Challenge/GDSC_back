@@ -1,7 +1,9 @@
 package com.solution.green.controller;
 
+import com.solution.green.dto.MemCateDto;
 import com.solution.green.dto.MemberDto;
 import com.solution.green.service.GCSService;
+import com.solution.green.service.MemCateService;
 import com.solution.green.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +24,10 @@ import static com.solution.green.code.DatabaseName.URL_PREFIX;
 public class MemberController {
     private final MemberService memberService;
     private final GCSService gcsService;
+    private final MemCateService memCateService;
 
-    // TODO - 멤버 우선순위 카테고리 create
     // TODO - 멤버 우선순위 카테고리 update
+    // TODO - 현재 있는 뱃지 중 선택하는 메소드
 
     @PostMapping("/create-member")
     public MemberDto.Response createMember(
@@ -32,6 +35,11 @@ public class MemberController {
         return memberService.createMember(request);
     }
 
+    @PostMapping("/createPriority/{memberId}") // TODO - not yet checking
+    public void createPriority(@PathVariable final Long memberId,
+                               @Valid @RequestBody MemCateDto.Request request) {
+        memCateService.createPriority(memberId, request);
+    }
     @GetMapping("/get-all-members")
     public List<MemberDto.Response> getAllMembers() {
         return memberService.getAllMembers();

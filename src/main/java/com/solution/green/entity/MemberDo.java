@@ -37,6 +37,7 @@ public class MemberDo implements Serializable {
 
     @Column(name = "stance", nullable = false)
     private int stance;
+    // TODO - 찜 없이 [0: 진행중, 1: 완료] 로 변경
     /*
      * 0: 찜
      * 1: 진행중

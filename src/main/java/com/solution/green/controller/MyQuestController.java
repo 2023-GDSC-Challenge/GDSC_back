@@ -4,6 +4,7 @@ import com.solution.green.dto.CertificateDto;
 import com.solution.green.dto.MemDoDto;
 import com.solution.green.service.CertificateService;
 import com.solution.green.service.GCSService;
+import com.solution.green.service.MemCateService;
 import com.solution.green.service.MemDoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import static com.solution.green.code.DatabaseName.URL_PREFIX;
 @RequestMapping("/api")
 public class MyQuestController {
     private final MemDoService memDoService;
+    private final MemCateService memCateService;
     private final GCSService gcsService;
     private final CertificateService certificateService;
 
@@ -63,14 +65,9 @@ public class MyQuestController {
         return URL_PREFIX.getDescription() + uuid;
     }
 
-    // TODO - 퀘스트 완료했을 때 완료 처리하는 메소드
-    @PatchMapping("/updateQuestDone/{memberDoId}")
-    public String updateQuestDone(@PathVariable final Long memberDoId) {
-        // TODO - 멤버두 stance 를 사용 완료로 변경
-
-        // TODO - 업데이트되는 뱃지 있는지 확인
-        // TODO - 업데이트된 뱃지가 있으면 마이겟 디비에 추가
-        return null;
+    @PatchMapping("/updateQuestDone/{memberDoId}") // TODO - not yet testing
+    public void updateQuestDone(@PathVariable final Long memberDoId) {
+        memDoService.updateQuestStance(memberDoId);
     }
 
     @PatchMapping("/updateQuestGiveUp/{memberDoId}") // TODO - not yet testing

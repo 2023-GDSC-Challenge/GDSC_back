@@ -1,17 +1,14 @@
 package com.solution.green.service;
 
 import com.solution.green.dto.MemDoDto;
-import com.solution.green.entity.MemberDo;
-import com.solution.green.entity.Quest;
+import com.solution.green.entity.*;
 import com.solution.green.exception.GreenException;
-import com.solution.green.repository.CertificateImageRepository;
-import com.solution.green.repository.MemDoRepository;
-import com.solution.green.repository.MemberRepository;
-import com.solution.green.repository.QuestRepository;
+import com.solution.green.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -23,24 +20,27 @@ import static com.solution.green.code.GreenErrorCode.NO_QUEST;
 @Service
 @RequiredArgsConstructor
 public class MemDoService {
+    private final MemCateService memCateService;
     private final MemDoRepository memDoRepository;
     private final QuestRepository questRepository;
     private final MemberRepository memberRepository;
     private final CertificateImageRepository certificateImageRepository;
+    private final MemberGetRepository memberGetRepository;
+    private final BadgeRepository badgeRepository;
 
     @Transactional
     public MemDoDto.My addToMyQuest(Long memberId, Long questId) {
         Date now = new Date();
         updateQuestChallenger(questId, 1);
         return MemDoDto.My.fromEntity(memDoRepository.save(
-                MemberDo.builder()
-                        .quest(getQuestEntity(questId))
-                        .member(memberRepository.findById(memberId)
-                                .orElseThrow(() -> new GreenException(NO_MEMBER)))
-                        .startDate(now)
-                        .stance(0)
-                        .dueDate(setDueDate(now, questId))
-                        .build()
+                        MemberDo.builder()
+                                .quest(getQuestEntity(questId))
+                                .member(memberRepository.findById(memberId)
+                                        .orElseThrow(() -> new GreenException(NO_MEMBER)))
+                                .startDate(now)
+                                .stance(0)
+                                .dueDate(setDueDate(now, questId))
+                                .build()
                 )
         );
     }
@@ -99,6 +99,7 @@ public class MemDoService {
                 .orElseThrow(() -> new GreenException(NO_QUEST));
     }
 
+    @Transactional
     public void deleteQuest(Long memberDoId) {
         // certificate DB 에 사진 있으면 전부 삭제
         MemberDo memberDo = getMemberDoEntity(memberDoId);
@@ -108,5 +109,37 @@ public class MemDoService {
         memDoRepository.deleteById(memberDoId);
         // 퀘스트 challengers -= 1
         updateQuestChallenger(questId, -1);
+    }
+    @Transactional
+    public void updateQuestStance(Long memberDoId) {
+        // setting
+        MemberDo memberDo = getMemberDoEntity(memberDoId);
+        Member member = memberDo.getMember();
+        Long cateId = questRepository.findById(memberDo.getQuest().getId())
+                .orElseThrow(() -> new GreenException(NO_QUEST))
+                .getSubCategory().getCategory().getId();
+        // 바꾸기 전의 rate 저장
+        Long prevDoneCount = memCateService.getDoneQuestPerCategory(cateId);
+        Long count = memCateService.getQuestNumPerCategory(cateId);
+        Double prevRate = Double.valueOf(0);
+        if (!prevDoneCount.equals(0))
+            prevRate = Double.valueOf(prevDoneCount / count);
+        // stance 변경 0 -> 1
+        memberDo.setStance(1);
+        memDoRepository.save(memberDo);
+        // 바꾸고 나서의 rate 비교 -> 업데이트된 뱃지가 있으면 마이겟 디비에 추가
+        Double curRate = Double.valueOf(prevDoneCount+1 / count);
+        Double[] achievementList = {
+                Double.valueOf(30),
+                Double.valueOf(50),
+                Double.valueOf(70),
+                Double.valueOf(100)};
+        for (Double i : achievementList)
+            if (prevRate < i && i <= curRate)
+                memberGetRepository.save(MemberGet.builder()
+                        .member(member)
+                        .badge(badgeRepository
+                                .findByCategory_IdAndAchievement(cateId, i))
+                        .build());
     }
 }

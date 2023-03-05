@@ -15,8 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.solution.green.code.GreenErrorCode.NO_CATEGORY;
-import static com.solution.green.code.GreenErrorCode.NO_MEMBER;
+import static com.solution.green.code.GreenErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,8 +43,7 @@ public class MemCateService {
     @Transactional(readOnly = true)
     public Long getDoneQuestPerCategory(Long categoryId) {
         return memDoRepository.countByQuest_SubCategory_CategoryAndStance(
-                getCategoryEntity(categoryId),
-                1 // means done (0: ing | 1: done)
+                getCategoryEntity(categoryId), 1 // means done (0: ing | 1: done)
         );
     }
 

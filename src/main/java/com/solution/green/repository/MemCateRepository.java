@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface MemCateRepository extends JpaRepository<MemberCategory, Long> {
     List<MemberCategory> findByMember_IdOrderByPriorityAsc(Long id);
+
 }

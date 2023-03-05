@@ -7,6 +7,7 @@ import com.solution.green.service.MemCateService;
 import com.solution.green.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,7 +27,6 @@ public class MemberController {
     private final GCSService gcsService;
     private final MemCateService memCateService;
 
-    // TODO - 멤버 우선순위 카테고리 update
     // TODO - 현재 있는 뱃지 중 선택하는 메소드
 
     @PostMapping("/create-member")
@@ -35,10 +35,17 @@ public class MemberController {
         return memberService.createMember(request);
     }
 
-    @PostMapping("/createPriority/{memberId}") // TODO - not yet checking
+    @PostMapping("/createPriority/{memberId}") // TODO - not yet testing
     public void createPriority(@PathVariable final Long memberId,
                                @Valid @RequestBody MemCateDto.Request request) {
         memCateService.createPriority(memberId, request);
+    }
+    
+    @PatchMapping("/updatePriority/{memberId}") // TODO - not yet testing
+    public void updatePriority(
+            @PathVariable final Long memberId,
+            @Valid @RequestBody MemCateDto.Request request) {
+        memCateService.updatePriority(memberId, request);
     }
     @GetMapping("/get-all-members")
     public List<MemberDto.Response> getAllMembers() {

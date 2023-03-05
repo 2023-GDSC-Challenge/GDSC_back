@@ -8,6 +8,7 @@ import com.solution.green.entity.MemberCategory;
 import com.solution.green.exception.GreenException;
 import com.solution.green.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +49,7 @@ public class MemCateService {
         );
     }
 
+    @Transactional(readOnly = true)
     private Category getCategoryEntity(Long categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new GreenException(NO_CATEGORY));
@@ -85,5 +87,26 @@ public class MemCateService {
                 .category(getCategoryEntity(categoryId))
                 .priority(priority)
                 .build());
+    }
+
+    @Transactional(readOnly = true)
+    public void updatePriority(Long memberId, MemCateDto.Request request) {
+        List<MemberCategory> prev =
+                memCateRepository.findByMember_IdOrderByPriorityAsc(memberId);
+        for (MemberCategory memberCategory : prev)
+            if (memberCategory.getPriority().equals(1))
+                updateMemberCategory(memberCategory, request.getFirst());
+            else if (memberCategory.getPriority().equals(2))
+                updateMemberCategory(memberCategory, request.getSecond());
+            else if (memberCategory.getPriority().equals(3))
+                updateMemberCategory(memberCategory, request.getThird());
+            else if (memberCategory.getPriority().equals(4))
+                updateMemberCategory(memberCategory, request.getFourth());
+    }
+
+    @Transactional
+    private void updateMemberCategory(MemberCategory memberCategory, Long cateId) {
+        memberCategory.setCategory(getCategoryEntity(cateId));
+        memCateRepository.save(memberCategory);
     }
 }

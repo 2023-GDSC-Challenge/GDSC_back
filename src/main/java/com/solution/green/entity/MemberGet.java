@@ -25,7 +25,7 @@ public class MemberGet implements Serializable {
     @JoinColumn(name = "member_id", referencedColumnName = "member_id")
     private Member member;
 
-    @ManyToOne
+    @ManyToOne // TODO - 변경 고민
     @JoinColumn(name = "badge_id", referencedColumnName = "badge_id")
     private Badge badge;
 

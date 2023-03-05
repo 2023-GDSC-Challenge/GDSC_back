@@ -25,8 +25,7 @@ public class MyQuestController {
     private final GCSService gcsService;
     private final CertificateService certificateService;
 
-    // TODO - 퀘스트 완료했을 때 완료 처리하는 메소드
-    // TODO - 퀘스트 포기하는 메소드
+
     @GetMapping("/getMyQuestNotYetList/{memberId}")
     public List<MemDoDto.My> getMyQuestNotYetList(@PathVariable final Long memberId) {
         return memDoService.getMyQuestNotYetList(memberId);
@@ -62,5 +61,22 @@ public class MyQuestController {
         String uuid = gcsService.uploadImage(file);
         certificateService.updateCertificateImage(memberDoId, uuid);
         return URL_PREFIX.getDescription() + uuid;
+    }
+
+    // TODO - 퀘스트 완료했을 때 완료 처리하는 메소드
+    @PatchMapping("/updateQuestDone/{memberDoId}")
+    public String updateQuestDone() {
+        // TODO - 멤버두 stance 를 사용 완료로 변경
+        // TODO - 업데이트되는 뱃지 있는지 확인
+        // TODO - 업데이트된 뱃지가 있으면 마이겟 디비에 추가
+        return null;
+    }
+
+    // TODO - 퀘스트 포기하는 메소드
+    @PatchMapping("/updateQuestGiveUp/{memberDoId}")
+    public String updateQuestGiveUp() {
+        // TODO - 멤버두 db 에서 삭제
+        // TODO - 퀘스트 challenger -= 1
+        return null;
     }
 }

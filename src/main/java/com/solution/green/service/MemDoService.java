@@ -36,7 +36,7 @@ public class MemDoService {
                         .member(memberRepository.findById(memberId)
                                 .orElseThrow(() -> new GreenException(NO_MEMBER)))
                         .startDate(now)
-                        .stance(1)
+                        .stance(0)
                         .dueDate(setDueDate(now, questId))
                         .build()
                 )

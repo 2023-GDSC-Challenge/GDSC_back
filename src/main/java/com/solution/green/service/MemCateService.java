@@ -45,7 +45,7 @@ public class MemCateService {
     public Long getDoneQuestPerCategory(Long categoryId) {
         return memDoRepository.countByQuest_SubCategory_CategoryAndStance(
                 getCategoryEntity(categoryId),
-                2 // means done (0: 찜 | 1: ing)
+                1 // means done (0: ing | 1: done)
         );
     }
 

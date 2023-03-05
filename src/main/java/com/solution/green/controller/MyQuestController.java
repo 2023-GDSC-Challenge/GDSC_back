@@ -65,18 +65,17 @@ public class MyQuestController {
 
     // TODO - 퀘스트 완료했을 때 완료 처리하는 메소드
     @PatchMapping("/updateQuestDone/{memberDoId}")
-    public String updateQuestDone() {
+    public String updateQuestDone(@PathVariable final Long memberDoId) {
         // TODO - 멤버두 stance 를 사용 완료로 변경
+
         // TODO - 업데이트되는 뱃지 있는지 확인
         // TODO - 업데이트된 뱃지가 있으면 마이겟 디비에 추가
         return null;
     }
 
-    // TODO - 퀘스트 포기하는 메소드
-    @PatchMapping("/updateQuestGiveUp/{memberDoId}")
-    public String updateQuestGiveUp() {
-        // TODO - 멤버두 db 에서 삭제
-        // TODO - 퀘스트 challenger -= 1
+    @PatchMapping("/updateQuestGiveUp/{memberDoId}") // TODO - not yet testing
+    public String updateQuestGiveUp(@PathVariable final Long memberDoId) {
+        memDoService.deleteQuest(memberDoId);
         return null;
     }
 }

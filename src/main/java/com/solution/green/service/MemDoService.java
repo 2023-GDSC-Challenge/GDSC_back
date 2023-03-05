@@ -4,6 +4,7 @@ import com.solution.green.dto.MemDoDto;
 import com.solution.green.entity.MemberDo;
 import com.solution.green.entity.Quest;
 import com.solution.green.exception.GreenException;
+import com.solution.green.repository.CertificateImageRepository;
 import com.solution.green.repository.MemDoRepository;
 import com.solution.green.repository.MemberRepository;
 import com.solution.green.repository.QuestRepository;
@@ -25,11 +26,12 @@ public class MemDoService {
     private final MemDoRepository memDoRepository;
     private final QuestRepository questRepository;
     private final MemberRepository memberRepository;
+    private final CertificateImageRepository certificateImageRepository;
 
     @Transactional
     public MemDoDto.My addToMyQuest(Long memberId, Long questId) {
         Date now = new Date();
-        updateQuestChallenger(questId);
+        updateQuestChallenger(questId, 1);
         return MemDoDto.My.fromEntity(memDoRepository.save(
                 MemberDo.builder()
                         .quest(getQuestEntity(questId))
@@ -72,9 +74,11 @@ public class MemDoService {
     }
 
     @Transactional
-    private void updateQuestChallenger(Long questId) {
+    private void updateQuestChallenger(Long questId, int how) {
         Quest quest = getQuestEntity(questId);
-        quest.setChallenger(quest.getChallenger() + 1);
+        quest.setChallenger(quest.getChallenger() + how);
+        // how == 1: add challenger
+        // how == -1: delete challenger
         questRepository.save(quest);
     }
 
@@ -84,10 +88,25 @@ public class MemDoService {
                 .orElseThrow(() -> new GreenException(NO_QUEST));
     }
 
-    @Transactional(readOnly = true)
     public MemDoDto.DetailView getMyQuestDetailView(Long memberDoId) {
         return MemDoDto.DetailView.fromEntity(
-                memDoRepository.findById(memberDoId)
-                        .orElseThrow(() -> new GreenException(NO_QUEST)));
+                getMemberDoEntity(memberDoId));
+    }
+
+    @Transactional(readOnly = true)
+    private MemberDo getMemberDoEntity(Long memberDoId) {
+        return memDoRepository.findById(memberDoId)
+                .orElseThrow(() -> new GreenException(NO_QUEST));
+    }
+
+    public void deleteQuest(Long memberDoId) {
+        // certificate DB 에 사진 있으면 전부 삭제
+        MemberDo memberDo = getMemberDoEntity(memberDoId);
+        Long questId = memberDo.getQuest().getId();
+        certificateImageRepository.deleteByMemberDo(memberDo);
+        // memberDo DB 에서 퀘스트 기록 삭제
+        memDoRepository.deleteById(memberDoId);
+        // 퀘스트 challengers -= 1
+        updateQuestChallenger(questId, -1);
     }
 }

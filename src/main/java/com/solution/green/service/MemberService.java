@@ -2,7 +2,9 @@ package com.solution.green.service;
 
 import com.solution.green.dto.MemberDto;
 import com.solution.green.entity.Member;
+import com.solution.green.entity.MemberGet;
 import com.solution.green.exception.GreenException;
+import com.solution.green.repository.MemberGetRepository;
 import com.solution.green.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +21,7 @@ import static com.solution.green.code.GreenErrorCode.*;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final MemberGetRepository memberGetRepository;
 
     @Transactional
     public MemberDto.Response createMember(@NonNull MemberDto.Request request) {
@@ -29,7 +32,6 @@ public class MemberService {
                                     .email(request.getEmail())
                                     .nickname(request.getNickname())
                                     .password(request.getPassword())
-                                    .title(request.getResidence())
                                     .build()));
         else throw new GreenException(ALREADY_REGISTERED);
     }
@@ -37,7 +39,7 @@ public class MemberService {
     public MemberDto.Response login(@NonNull MemberDto.Login loginMember) {
         Member entity = getMemberEntityByEmail(loginMember.getEmail());
         if (loginMember.getPassword().equals(entity.getPassword()))
-            return MemberDto.Response.fromEntity(entity);
+            return getResponseWithTitle(entity);
         else throw new GreenException(WRONG_PASSWORD);
     }
 
@@ -51,15 +53,32 @@ public class MemberService {
     }
 
     public MemberDto.Response getMemberDetail(Long memberId) {
-        return MemberDto.Response.fromEntity(getUserEntityById(memberId));
+        return getResponseWithTitle(getUserEntityById(memberId));
+    }
+
+    private MemberDto.Response getResponseWithTitle(Member member) {
+        MemberDto.Response dto =
+                MemberDto.Response.fromEntity(member);
+        setMemberDtoTitle(dto);
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    private void setMemberDtoTitle(MemberDto.Response dto) {
+        dto.setTitle(memberGetRepository.findByMember_IdAndChoice(
+                dto.getMemberId(), 2)
+                .getBadge().getName());
     }
 
     @Transactional(readOnly = true)
     public List<MemberDto.Response> getAllMembers() {
-        return memberRepository.findAll()
+        List<MemberDto.Response> list = memberRepository.findAll()
                 .stream()
                 .map(MemberDto.Response::fromEntity)
                 .collect(Collectors.toList());
+        for (MemberDto.Response dto : list)
+            setMemberDtoTitle(dto);
+        return list;
     }
 
     @Transactional
@@ -77,10 +96,8 @@ public class MemberService {
             else throw new GreenException(ALREADY_REGISTERED);
         if (updateRequest.getPassword() != null)
             member.setPassword(updateRequest.getPassword());
-        if (updateRequest.getResidence() != null)
-            member.setTitle(updateRequest.getResidence());
 
-        return MemberDto.Response.fromEntity(memberRepository.save(member));
+        return getResponseWithTitle(memberRepository.save(member));
     }
 
     @Transactional

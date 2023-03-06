@@ -1,9 +1,11 @@
 package com.solution.green.controller;
 
 import com.solution.green.dto.MemCateDto;
+import com.solution.green.dto.MemGetDto;
 import com.solution.green.dto.MemberDto;
 import com.solution.green.service.GCSService;
 import com.solution.green.service.MemCateService;
+import com.solution.green.service.MemGetService;
 import com.solution.green.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +28,7 @@ public class MemberController {
     private final MemberService memberService;
     private final GCSService gcsService;
     private final MemCateService memCateService;
-
-    // TODO - title 을 뺄 것인가?
-    // TODO - => title 생성 & 변경하는 메소드 필요
-    // TODO - member 정보 리턴하는 메소드에서 title 파트 수정 필요
-    // TODO - member entity & dto 수정 필요
+    private final MemGetService memGetService;
 
     @PostMapping("/create-member")
     public MemberDto.Response createMember(
@@ -43,12 +41,23 @@ public class MemberController {
                                @Valid @RequestBody MemCateDto.Request request) {
         memCateService.createPriority(memberId, request);
     }
+    @PostMapping("/createTitle/{memberId}") // TODO - not yet testing
+    public MemGetDto.Title createTitle(@PathVariable final Long memberId,
+                                       @Valid @RequestBody Long titleId) {
+        return memGetService.createTitle(memberId, titleId);
+    }
     
     @PatchMapping("/updatePriority/{memberId}") // TODO - not yet testing
     public void updatePriority(
             @PathVariable final Long memberId,
             @Valid @RequestBody MemCateDto.Request request) {
         memCateService.updatePriority(memberId, request);
+    }
+    @PatchMapping("/updateTitle/{memberId}") // TODO - not yet testing
+    public MemGetDto.Title updateTitle(
+            @PathVariable final Long memberId,
+            @Valid @RequestBody Long titleId) {
+        return memGetService.updateTitle(memberId, titleId);
     }
     @GetMapping("/get-all-members")
     public List<MemberDto.Response> getAllMembers() {

@@ -25,12 +25,12 @@ public class MemberGet implements Serializable {
     @JoinColumn(name = "member_id", referencedColumnName = "member_id")
     private Member member;
 
-    @ManyToOne // TODO - 변경 고민
+    @ManyToOne
     @JoinColumn(name = "badge_id", referencedColumnName = "badge_id")
     private Badge badge;
 
     @Column(name = "choice", length = 1)
-    private Boolean choice;
+    private int choice; // TODO - 0: not choice, 1: choice, 2: title
 
     // TODO - AuditingEntityListener 사용해야함
 }

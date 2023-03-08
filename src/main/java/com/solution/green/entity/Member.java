@@ -36,9 +36,6 @@ public class Member implements Serializable {
     @Column(name = "password", length = 50, nullable = false)
     private String password;
 
-//    @Column(name = "member_title", length = 100, nullable = true)
-//    private String title; // TODO - 삭제해야한다
-
     @Column(name = "member_image", nullable = true)
     private String image;
 

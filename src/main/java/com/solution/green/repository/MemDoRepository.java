@@ -15,7 +15,11 @@ public interface MemDoRepository extends JpaRepository<MemberDo, Long> {
 
     List<MemberDo> findByMember_Id(Long id);
 
+    boolean existsByMember_IdAndStance(Long id, Boolean stance);
+
     List<MemberDo> findByMember_IdAndStanceOrderByDueDateAsc(Long id, int stance);
+
+    MemberDo findFirstByMember_IdAndStanceOrderByDueDateAsc(Long id, Boolean stance);
 
     @Override
     Optional<MemberDo> findById(Long aLong);

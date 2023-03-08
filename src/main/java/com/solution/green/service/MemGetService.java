@@ -1,6 +1,5 @@
 package com.solution.green.service;
 
-import com.solution.green.code.GreenErrorCode;
 import com.solution.green.dto.MemGetDto;
 import com.solution.green.entity.Badge;
 import com.solution.green.entity.MemberGet;
@@ -62,7 +61,7 @@ public class MemGetService {
                 .collect(Collectors.toList());
     }
     @Transactional
-    public void updateMainBadge(Long memberGetId) {
+    public void createMainBadge(Long memberGetId) {
         MemberGet entity = memberGetRepository.findById(memberGetId)
                 .orElseThrow(() -> new GreenException(NO_BADGE));
         entity.setChoice(1);

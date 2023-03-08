@@ -96,7 +96,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public MemberDto.Response login(@Valid @RequestBody MemberDto.Login loginMember) {
+    public MemberDto.ToModel login(@Valid @RequestBody MemberDto.Login loginMember) {
         return memberService.login(loginMember);
     }
 

@@ -58,4 +58,21 @@ public class MemberDto {
                     .build();
         }
     }
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class ToModel {
+        @NotNull
+        private Long memberId;
+        @NotNull
+        private String nickname;
+
+        public static ToModel fromEntity(Member member) {
+            return ToModel.builder()
+                    .memberId(member.getId())
+                    .nickname(member.getNickname())
+                    .build();
+        }
+    }
 }

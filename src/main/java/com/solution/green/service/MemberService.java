@@ -36,10 +36,10 @@ public class MemberService {
         else throw new GreenException(ALREADY_REGISTERED);
     }
 
-    public MemberDto.Response login(@NonNull MemberDto.Login loginMember) {
+    public MemberDto.ToModel login(@NonNull MemberDto.Login loginMember) {
         Member entity = getMemberEntityByEmail(loginMember.getEmail());
         if (loginMember.getPassword().equals(entity.getPassword()))
-            return getResponseWithTitle(entity);
+            return MemberDto.ToModel.fromEntity(entity);
         else throw new GreenException(WRONG_PASSWORD);
     }
 

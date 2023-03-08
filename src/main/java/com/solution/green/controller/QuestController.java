@@ -38,8 +38,8 @@ public class QuestController {
     }
 
     @PostMapping("/add-to-my-quest/{memberId}/{questId}")
-    public MemDoDto.My addToMyQuest(@PathVariable final Long memberId,
+    public void addToMyQuest(@PathVariable final Long memberId,
                                     @PathVariable final Long questId) {
-        return memDoService.addToMyQuest(memberId, questId);
+        memDoService.addToMyQuest(memberId, questId); // void로 변경
     }
 }

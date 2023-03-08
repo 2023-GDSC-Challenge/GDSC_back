@@ -21,10 +21,15 @@ public class BadgeController {
     public List<MemGetDto.List> getMyBadge(@PathVariable final Long memberId) {
         return memGetService.getMyBadge(memberId);
     }
-    
+
     @PostMapping("/createMainBadge")
     public void createMainBadge(@Valid @RequestBody Long memberGetId) {
         memGetService.createMainBadge(memberGetId);
     }
-    // TODO - 뱃지 변경하는 메소드
+
+    @PatchMapping("/updateMainBadge/{memberId}")
+    public void updateMainBadge(@PathVariable final Long memberId,
+                                @Valid @RequestBody Long memberGetId) {
+        memGetService.updateMainBadge(memberId, memberGetId);
+    }
 }

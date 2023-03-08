@@ -67,4 +67,15 @@ public class MemGetService {
         entity.setChoice(1);
         memberGetRepository.save(entity);
     }
+
+    @Transactional
+    public void updateMainBadge(Long memberId, Long memberGetId) {
+        // 이전에 mainBadge 였던 것을 1 -> 0으로 변경
+        MemberGet prevMainBadge =
+                memberGetRepository.findByMember_IdAndChoice(memberId, 1);
+        prevMainBadge.setChoice(0);
+        memberGetRepository.save(prevMainBadge);
+        // 새로운 mainBadge 설정 0 -> 1
+        createMainBadge(memberGetId);
+    }
 }

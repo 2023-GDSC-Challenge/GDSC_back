@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.solution.green.code.GreenErrorCode.NO_BADGE;
 import static com.solution.green.code.GreenErrorCode.NO_MEMBER;
 
@@ -45,5 +48,14 @@ public class MemGetService {
                 memberGetRepository.findByMember_IdAndChoice(memberId, 2);
         memberGet.setBadge(getBadgeEntity(titleId));
         return MemGetDto.Title.fromEntity(memberGetRepository.save(memberGet));
+    }
+    @Transactional(readOnly = true)
+    public List<MemGetDto.List> getMyBadge(Long memberId) {
+        return memberGetRepository
+                .findByMember_IdAndChoiceNotOrderByBadge_AchievementDesc(
+                        memberId, 2)
+                .stream()
+                .map(MemGetDto.List::fromEntity)
+                .collect(Collectors.toList());
     }
 }

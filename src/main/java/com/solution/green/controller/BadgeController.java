@@ -1,10 +1,13 @@
 package com.solution.green.controller;
 
+import com.solution.green.dto.MemDoDto;
+import com.solution.green.dto.MemGetDto;
+import com.solution.green.service.MemGetService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -12,8 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "*")
 @RequestMapping("/api")
 public class BadgeController {
+    private final MemGetService memGetService;
 
-    // TODO - 내가 가진 뱃지 리턴하는 메소드
+    @GetMapping("/getMyBadge/{memberId}")
+    public List<MemGetDto.List> getMyBadge(@PathVariable final Long memberId) {
+        return memGetService.getMyBadge(memberId);
+    }
+
+
     // TODO - 현재 있는 뱃지 중 선택하는 메소드
     // TODO - 뱃지 고르는 메소드
     // TODO - 뱃지 변경하는 메소드

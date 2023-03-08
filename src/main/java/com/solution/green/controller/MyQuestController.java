@@ -29,17 +29,17 @@ public class MyQuestController {
 
 
     @GetMapping("/getMyQuestNotYetList/{memberId}")
-    public List<MemDoDto.My> getMyQuestNotYetList(@PathVariable final Long memberId) {
+    public List<MemDoDto.ListView> getMyQuestNotYetList(@PathVariable final Long memberId) {
         return memDoService.getMyQuestNotYetList(memberId);
     }
 
     @GetMapping("/getMyQuestIngList/{memberId}")
-    public List<MemDoDto.My> getMyQuestIngList(@PathVariable final Long memberId) {
+    public List<MemDoDto.ListView> getMyQuestIngList(@PathVariable final Long memberId) {
         return memDoService.getMyQuestIngList(memberId);
     }
 
     @GetMapping("/getMyQuestDoneList/{memberId}")
-    public List<MemDoDto.My> getMyQuestDoneList(@PathVariable final Long memberId) {
+    public List<MemDoDto.ListView> getMyQuestDoneList(@PathVariable final Long memberId) {
         return memDoService.getMyQuestDoneList(memberId);
     }
 

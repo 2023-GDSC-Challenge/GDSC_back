@@ -1,14 +1,17 @@
 package com.solution.green.service;
 
 import com.solution.green.dto.MemDoDto;
-import com.solution.green.entity.*;
+import com.solution.green.dto.QuestDto;
+import com.solution.green.entity.Member;
+import com.solution.green.entity.MemberDo;
+import com.solution.green.entity.MemberGet;
+import com.solution.green.entity.Quest;
 import com.solution.green.exception.GreenException;
 import com.solution.green.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -27,12 +30,13 @@ public class MemDoService {
     private final CertificateImageRepository certificateImageRepository;
     private final MemberGetRepository memberGetRepository;
     private final BadgeRepository badgeRepository;
+    private final QuestService questService;
 
     @Transactional
-    public MemDoDto.My addToMyQuest(Long memberId, Long questId) {
+    public MemDoDto.ListView addToMyQuest(Long memberId, Long questId) {
         Date now = new Date();
         updateQuestChallenger(questId, 1);
-        return MemDoDto.My.fromEntity(memDoRepository.save(
+        return MemDoDto.ListView.fromEntity(memDoRepository.save(
                         MemberDo.builder()
                                 .quest(getQuestEntity(questId))
                                 .member(memberRepository.findById(memberId)
@@ -45,24 +49,24 @@ public class MemDoService {
         );
     }
 
-    public List<MemDoDto.My> getMyQuestNotYetList(Long memberId) {
+    public List<MemDoDto.ListView> getMyQuestNotYetList(Long memberId) {
         return getMyQuestList(memberId, 0);
     }
 
-    public List<MemDoDto.My> getMyQuestIngList(Long memberId) {
+    public List<MemDoDto.ListView> getMyQuestIngList(Long memberId) {
         return getMyQuestList(memberId, 1);
     }
 
-    public List<MemDoDto.My> getMyQuestDoneList(Long memberId) {
+    public List<MemDoDto.ListView> getMyQuestDoneList(Long memberId) {
         return getMyQuestList(memberId, 2);
     }
 
     @Transactional(readOnly = true)
-    public List<MemDoDto.My> getMyQuestList(Long memberId, int stance) {
+    public List<MemDoDto.ListView> getMyQuestList(Long memberId, int stance) {
         return memDoRepository
                 .findByMember_IdAndStanceOrderByDueDateAsc(memberId, stance)
                 .stream()
-                .map(MemDoDto.My::fromEntity)
+                .map(MemDoDto.ListView::fromEntity)
                 .collect(Collectors.toList());
     }
 
@@ -82,6 +86,39 @@ public class MemDoService {
         questRepository.save(quest);
     }
 
+    @Transactional
+    public void updateQuestStance(Long memberDoId) {
+        // setting
+        MemberDo memberDo = getMemberDoEntity(memberDoId);
+        Member member = memberDo.getMember();
+        Long cateId = questRepository.findById(memberDo.getQuest().getId())
+                .orElseThrow(() -> new GreenException(NO_QUEST))
+                .getSubCategory().getCategory().getId();
+        // 바꾸기 전의 rate 저장
+        Long prevDoneCount = memCateService.getDoneQuestPerCategory(cateId);
+        Long count = memCateService.getQuestNumPerCategory(cateId);
+        Double prevRate = Double.valueOf(0);
+        if (!prevDoneCount.equals(0))
+            prevRate = Double.valueOf(prevDoneCount / count);
+        // stance 변경 false -> true(done)
+        memberDo.setStance(true);
+        memDoRepository.save(memberDo);
+        // 바꾸고 나서의 rate 비교 -> 업데이트된 뱃지가 있으면 마이겟 디비에 추가
+        Double curRate = Double.valueOf(prevDoneCount + 1 / count);
+        Double[] achievementList = {
+                Double.valueOf(30),
+                Double.valueOf(50),
+                Double.valueOf(70),
+                Double.valueOf(100)};
+        for (Double i : achievementList)
+            if (prevRate < i && i <= curRate)
+                memberGetRepository.save(MemberGet.builder()
+                        .member(member)
+                        .badge(badgeRepository
+                                .findByCategory_IdAndAchievement(cateId, i))
+                        .build());
+    }
+    
     @Transactional(readOnly = true)
     private Quest getQuestEntity(Long questId) {
         return questRepository.findById(questId)
@@ -110,36 +147,18 @@ public class MemDoService {
         // 퀘스트 challengers -= 1
         updateQuestChallenger(questId, -1);
     }
-    @Transactional
-    public void updateQuestStance(Long memberDoId) {
-        // setting
-        MemberDo memberDo = getMemberDoEntity(memberDoId);
-        Member member = memberDo.getMember();
-        Long cateId = questRepository.findById(memberDo.getQuest().getId())
-                .orElseThrow(() -> new GreenException(NO_QUEST))
-                .getSubCategory().getCategory().getId();
-        // 바꾸기 전의 rate 저장
-        Long prevDoneCount = memCateService.getDoneQuestPerCategory(cateId);
-        Long count = memCateService.getQuestNumPerCategory(cateId);
-        Double prevRate = Double.valueOf(0);
-        if (!prevDoneCount.equals(0))
-            prevRate = Double.valueOf(prevDoneCount / count);
-        // stance 변경 false -> true(done)
-        memberDo.setStance(true);
-        memDoRepository.save(memberDo);
-        // 바꾸고 나서의 rate 비교 -> 업데이트된 뱃지가 있으면 마이겟 디비에 추가
-        Double curRate = Double.valueOf(prevDoneCount+1 / count);
-        Double[] achievementList = {
-                Double.valueOf(30),
-                Double.valueOf(50),
-                Double.valueOf(70),
-                Double.valueOf(100)};
-        for (Double i : achievementList)
-            if (prevRate < i && i <= curRate)
-                memberGetRepository.save(MemberGet.builder()
-                        .member(member)
-                        .badge(badgeRepository
-                                .findByCategory_IdAndAchievement(cateId, i))
-                        .build());
+    @Transactional(readOnly = true)
+    public MemDoDto.ListView getJustOneQuestToMain(Long memberId) {
+        // 진행중인 퀘스트가 있으면 -> 그 중 가장 우선순위 높은거
+        if (memDoRepository.existsByMember_IdAndStance(memberId, false))
+            return MemDoDto.ListView.fromEntity(
+                    memDoRepository.findFirstByMember_IdAndStanceOrderByDueDateAsc(
+                            memberId, false)
+            );
+        // 없으면 -> 퀘스트리스트 중 가장 우선순위 높은거
+        else return MemDoDto.ListView.builder()
+                .memDoId(Long.valueOf(-1)) // DB 에 저장된 값이 X -> 임의로 설정
+                .questDto(questService.getQuestNotMyQuestList(memberId).get(0))
+                .build();
     }
 }

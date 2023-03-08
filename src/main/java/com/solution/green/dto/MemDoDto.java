@@ -14,7 +14,7 @@ public class MemDoDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    public static class My {
+    public static class ListView {
         @NotNull
         private Long memDoId;
         @NotNull
@@ -25,8 +25,8 @@ public class MemDoDto {
         private Boolean stance;
         private Double achieveRate; // 보류
 
-        public static My fromEntity(MemberDo memberDo) {
-            return My.builder()
+        public static ListView fromEntity(MemberDo memberDo) {
+            return ListView.builder()
                     .memDoId(memberDo.getId())
                     .questDto(QuestDto.ListView.fromEntity(memberDo.getQuest()))
                     .startDate(memberDo.getStartDate())

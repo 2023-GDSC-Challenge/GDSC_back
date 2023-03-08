@@ -8,13 +8,13 @@ import com.solution.green.entity.MemberCategory;
 import com.solution.green.exception.GreenException;
 import com.solution.green.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.solution.green.code.GreenCode.QUEST_DONE;
 import static com.solution.green.code.GreenErrorCode.*;
 
 @Service
@@ -43,7 +43,7 @@ public class MemCateService {
     @Transactional(readOnly = true)
     public Long getDoneQuestPerCategory(Long categoryId) {
         return memDoRepository.countByQuest_SubCategory_CategoryAndStance(
-                getCategoryEntity(categoryId), 1 // means done (0: ing | 1: done)
+                getCategoryEntity(categoryId), QUEST_DONE.getBool()
         );
     }
 

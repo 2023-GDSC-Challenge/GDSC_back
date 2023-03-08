@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface MemDoRepository extends JpaRepository<MemberDo, Long> {
     long countByQuest_Id(Long id);
-    long countByQuest_SubCategory_CategoryAndStance(Category category, int stance);
+    long countByQuest_SubCategory_CategoryAndStance(Category category, Boolean stance);
 
     List<MemberDo> findByMember_Id(Long id);
 

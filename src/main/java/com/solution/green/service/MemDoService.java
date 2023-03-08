@@ -17,6 +17,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.solution.green.code.GreenCode.QUEST_DONE;
+import static com.solution.green.code.GreenCode.QUEST_ING;
 import static com.solution.green.code.GreenErrorCode.NO_MEMBER;
 import static com.solution.green.code.GreenErrorCode.NO_QUEST;
 
@@ -42,7 +44,7 @@ public class MemDoService {
                                 .member(memberRepository.findById(memberId)
                                         .orElseThrow(() -> new GreenException(NO_MEMBER)))
                                 .startDate(now)
-                                .stance(false)
+                                .stance(QUEST_DONE.getBool())
                                 .dueDate(setDueDate(now, questId))
                                 .build()
                 )
@@ -101,7 +103,7 @@ public class MemDoService {
         if (!prevDoneCount.equals(0))
             prevRate = Double.valueOf(prevDoneCount / count);
         // stance 변경 false -> true(done)
-        memberDo.setStance(true);
+        memberDo.setStance(QUEST_ING.getBool());
         memDoRepository.save(memberDo);
         // 바꾸고 나서의 rate 비교 -> 업데이트된 뱃지가 있으면 마이겟 디비에 추가
         Double curRate = Double.valueOf(prevDoneCount + 1 / count);
@@ -150,10 +152,10 @@ public class MemDoService {
     @Transactional(readOnly = true)
     public MemDoDto.ListView getJustOneQuestToMain(Long memberId) {
         // 진행중인 퀘스트가 있으면 -> 그 중 가장 우선순위 높은거
-        if (memDoRepository.existsByMember_IdAndStance(memberId, false))
+        if (memDoRepository.existsByMember_IdAndStance(memberId, QUEST_DONE.getBool()))
             return MemDoDto.ListView.fromEntity(
                     memDoRepository.findFirstByMember_IdAndStanceOrderByDueDateAsc(
-                            memberId, false)
+                            memberId, QUEST_DONE.getBool())
             );
         // 없으면 -> 퀘스트리스트 중 가장 우선순위 높은거
         else return MemDoDto.ListView.builder()

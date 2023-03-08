@@ -6,6 +6,7 @@ import com.solution.green.entity.Badge;
 import com.solution.green.entity.MemberGet;
 import com.solution.green.exception.GreenException;
 import com.solution.green.repository.BadgeRepository;
+import com.solution.green.repository.MemCateRepository;
 import com.solution.green.repository.MemberGetRepository;
 import com.solution.green.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,8 @@ public class MemGetService {
     private final MemberGetRepository memberGetRepository;
     private final MemberRepository memberRepository;
     private final BadgeRepository badgeRepository;
+    private final MemCateRepository memCateRepository;
+
     @Transactional
     public MemGetDto.Title createTitle(Long memberId, Long titleId) {
         return MemGetDto.Title.fromEntity(
@@ -57,5 +60,12 @@ public class MemGetService {
                 .stream()
                 .map(MemGetDto.List::fromEntity)
                 .collect(Collectors.toList());
+    }
+    @Transactional
+    public void updateMainBadge(Long memberGetId) {
+        MemberGet entity = memberGetRepository.findById(memberGetId)
+                .orElseThrow(() -> new GreenException(NO_BADGE));
+        entity.setChoice(1);
+        memberGetRepository.save(entity);
     }
 }

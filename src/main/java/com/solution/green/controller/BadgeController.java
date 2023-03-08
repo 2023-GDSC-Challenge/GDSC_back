@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -22,8 +23,10 @@ public class BadgeController {
         return memGetService.getMyBadge(memberId);
     }
 
-
-    // TODO - 현재 있는 뱃지 중 선택하는 메소드
     // TODO - 뱃지 고르는 메소드
+    @PostMapping("/updateMainBadge")
+    public void updateMainBadge(@Valid @RequestBody Long memberGetId) {
+        memGetService.updateMainBadge(memberGetId);
+    }
     // TODO - 뱃지 변경하는 메소드
 }

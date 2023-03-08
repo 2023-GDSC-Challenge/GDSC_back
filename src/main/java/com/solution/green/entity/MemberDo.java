@@ -36,12 +36,7 @@ public class MemberDo implements Serializable {
     private Date dueDate;
 
     @Column(name = "stance", nullable = false)
-    private int stance;
-    // TODO - 찜 없이 [0: 진행중, 1: 완료] 로 변경
-    /*
-     * 0: 진행중
-     * 1: 완료
-     * */
+    private Boolean stance;
 
     // TODO - AuditingEntityListener 사용해야함
 }

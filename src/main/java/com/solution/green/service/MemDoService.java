@@ -38,7 +38,7 @@ public class MemDoService {
                                 .member(memberRepository.findById(memberId)
                                         .orElseThrow(() -> new GreenException(NO_MEMBER)))
                                 .startDate(now)
-                                .stance(0)
+                                .stance(false)
                                 .dueDate(setDueDate(now, questId))
                                 .build()
                 )
@@ -124,8 +124,8 @@ public class MemDoService {
         Double prevRate = Double.valueOf(0);
         if (!prevDoneCount.equals(0))
             prevRate = Double.valueOf(prevDoneCount / count);
-        // stance 변경 0 -> 1
-        memberDo.setStance(1);
+        // stance 변경 false -> true(done)
+        memberDo.setStance(true);
         memDoRepository.save(memberDo);
         // 바꾸고 나서의 rate 비교 -> 업데이트된 뱃지가 있으면 마이겟 디비에 추가
         Double curRate = Double.valueOf(prevDoneCount+1 / count);

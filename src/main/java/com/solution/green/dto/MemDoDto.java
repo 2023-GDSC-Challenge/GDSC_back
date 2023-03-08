@@ -22,7 +22,7 @@ public class MemDoDto {
         private Date startDate;
         private Date dueDate;
         private Date leftTime; // 프론트에서 직접 계산
-        private int stance;
+        private Boolean stance;
         private Double achieveRate; // 보류
 
         public static My fromEntity(MemberDo memberDo) {
@@ -49,7 +49,7 @@ public class MemDoDto {
         private Date startDate;
         private Date dueDate;
         private Date leftTime; // 프론트에서 직접 계산
-        private int stance;
+        private Boolean stance;
         private Double achieveRate; // 보류
 
         public static DetailView fromEntity(MemberDo memberDo) {

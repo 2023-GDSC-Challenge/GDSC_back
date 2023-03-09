@@ -24,5 +24,8 @@ public class Category implements Serializable {
     private String name;
     @Column(name = "cate_icon", nullable = true)
     private String icon;
+
+    @Column(name = "colorCode", length = 20, nullable = true)
+    private String colorCode;
     // TODO - AuditingEntityListener 사용해야함
 }

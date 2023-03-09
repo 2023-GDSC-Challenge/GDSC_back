@@ -32,7 +32,5 @@ public class Badge implements Serializable {
     @Column(name = "achievement", length = 20, nullable = true)
     private Double achievement;
 
-    @Column(name = "colorCode", length = 20, nullable = true)
-    private String colorCode;
     // TODO - AuditingEntityListener 사용해야함
 }

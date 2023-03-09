@@ -99,10 +99,9 @@ public class MemberService {
     private MemberDto.Response getMemberResponse(Member entity) {
         MemberDto.Response dto = MemberDto.Response.fromEntity(entity);
         if (memberGetRepository.existsByMember_IdAndChoice(dto.getMemberId(), 2))
-            dto.setTitle(memberGetRepository
-                    .findByMember_IdAndChoice(dto.getMemberId(), 2)
-                    .orElseThrow(() -> new GreenException(NO_BADGE))
-                    .getBadge().getName());
+            dto.setTitle(getBadgeName(dto, 2));
+        if (memberGetRepository.existsByMember_IdAndChoice(dto.getMemberId(), 1))
+            dto.setMainBadge(getBadgeName(dto, 1));
         dto.setProgressQuests(
                 memDoRepository.countByMember_IdAndStance(
                         entity.getId(), QUEST_ING.getBool()));
@@ -113,6 +112,14 @@ public class MemberService {
                 memberGetRepository.countByMember_IdAndChoiceNot(
                         entity.getId(), 2));
         return dto;
+    }
+
+    @Transactional(readOnly = true)
+    private String getBadgeName(MemberDto.Response dto, int choice) {
+        return memberGetRepository
+                .findByMember_IdAndChoice(dto.getMemberId(), choice)
+                .orElseThrow(() -> new GreenException(NO_BADGE))
+                .getBadge().getName();
     }
 
     @Transactional

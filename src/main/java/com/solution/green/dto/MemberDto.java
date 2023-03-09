@@ -52,6 +52,9 @@ public class MemberDto {
         private String title;
         @Setter
         @Nullable
+        private String mainBadge;
+        @Setter
+        @Nullable
         private Long progressQuests;
         @Setter
         @Nullable

@@ -1,6 +1,5 @@
 package com.solution.green.controller;
 
-import com.solution.green.dto.MemDoDto;
 import com.solution.green.dto.QuestDto;
 import com.solution.green.service.MemDoService;
 import com.solution.green.service.QuestService;
@@ -21,9 +20,14 @@ public class QuestController {
     private final QuestService questService;
     private final MemDoService memDoService;
 
+    @PostMapping("/add-to-my-quest/{memberId}/{questId}")
+    public void addToMyQuest(@PathVariable final Long memberId,
+                             @PathVariable final Long questId) {
+        memDoService.addToMyQuest(memberId, questId);
+    }
+
     @PostMapping("/create-quest") // only for back-end
-    public QuestDto.ListView createQuest(
-            @Valid @RequestBody QuestDto.Request request) {
+    public QuestDto.ListView createQuest(@Valid @RequestBody QuestDto.Request request) {
         return questService.createQuest(request);
     }
 
@@ -38,14 +42,9 @@ public class QuestController {
         return questService.getQuestDetailView(questId);
     }
 
-    @PostMapping("/add-to-my-quest/{memberId}/{questId}")
-    public void addToMyQuest(@PathVariable final Long memberId,
-                                    @PathVariable final Long questId) {
-        memDoService.addToMyQuest(memberId, questId); // void로 변경
-    }
-
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") // every midnight
-    public void uploadCertificateImage() {
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    // every midnight // TODO - testing 미루기 - 테스트케이스가 좀 더 쌓이고!
+    public void validateFailedQuest() {
         memDoService.validateFailedQuest();
     }
 }

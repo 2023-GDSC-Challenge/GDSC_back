@@ -4,7 +4,6 @@ import com.solution.green.dto.CategoryDto;
 import com.solution.green.dto.MemDoDto;
 import com.solution.green.service.MemCateService;
 import com.solution.green.service.MemDoService;
-import com.solution.green.service.QuestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,6 @@ import java.util.List;
 public class CategoryController {
     private final MemCateService memCateService;
     private final MemDoService memDoService;
-    private final QuestService questService;
 
     @GetMapping("/getJustOneQuestToMain/{memberId}")
     public MemDoDto.ListView getJustOneQuestToMain(@PathVariable final Long memberId) {

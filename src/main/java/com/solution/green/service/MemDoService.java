@@ -33,6 +33,12 @@ public class MemDoService {
     private final BadgeRepository badgeRepository;
     private final QuestService questService;
 
+    private final Double[] achievementList = {
+            Double.valueOf(30),
+            Double.valueOf(50),
+            Double.valueOf(70),
+            Double.valueOf(100)};
+
     @Transactional
     public MemDoDto.ListView addToMyQuest(Long memberId, Long questId) {
         Date now = new Date();
@@ -43,7 +49,7 @@ public class MemDoService {
                                 .member(memberRepository.findById(memberId)
                                         .orElseThrow(() -> new GreenException(NO_MEMBER)))
                                 .startDate(now)
-                                .stance(QUEST_DONE.getBool())
+                                .stance(QUEST_ING.getBool())
                                 .dueDate(setDueDate(now, questId))
                                 .build()
                 )
@@ -101,23 +107,26 @@ public class MemDoService {
         Double prevRate = Double.valueOf(0);
         if (!prevDoneCount.equals(0))
             prevRate = Double.valueOf(prevDoneCount / count);
+        System.out.println(prevRate);
+        System.out.println();
         // stance 변경 false -> true(done)
-        memberDo.setStance(QUEST_ING.getBool());
-        memDoRepository.save(memberDo);
+        memberDo.setStance(QUEST_DONE.getBool());
+        MemberDo tmp = memDoRepository.save(memberDo); // TODO - 얘도 안된다
+        System.out.println(memDoRepository.findById(tmp.getId()).get().getStance());
+        System.out.println();
         // 바꾸고 나서의 rate 비교 -> 업데이트된 뱃지가 있으면 마이겟 디비에 추가
         Double curRate = Double.valueOf(prevDoneCount + 1 / count);
-        Double[] achievementList = {
-                Double.valueOf(30),
-                Double.valueOf(50),
-                Double.valueOf(70),
-                Double.valueOf(100)};
+        System.out.println(curRate);
         for (Double i : achievementList)
-            if (prevRate < i && i <= curRate)
+            if (prevRate < i && i <= curRate) {
                 memberGetRepository.save(MemberGet.builder()
                         .member(member)
                         .badge(badgeRepository
                                 .findByCategory_IdAndAchievement(cateId, i))
                         .build());
+//                System.out.println();
+            }
+//        System.out.println();
     }
     
     @Transactional(readOnly = true)
@@ -131,12 +140,6 @@ public class MemDoService {
                 getMemberDoEntity(memberDoId));
     }
 
-    @Transactional(readOnly = true)
-    private MemberDo getMemberDoEntity(Long memberDoId) {
-        return memDoRepository.findById(memberDoId)
-                .orElseThrow(() -> new GreenException(NO_QUEST));
-    }
-
     @Transactional
     public void deleteQuest(Long memberDoId) {
         // certificate DB 에 사진 있으면 전부 삭제
@@ -148,6 +151,7 @@ public class MemDoService {
         // 퀘스트 challengers -= 1
         updateQuestChallenger(questId, -1);
     }
+
     @Transactional(readOnly = true)
     public MemDoDto.ListView getJustOneQuestToMain(Long memberId) {
         // 진행중인 퀘스트가 있으면 -> 그 중 가장 우선순위 높은거
@@ -162,29 +166,38 @@ public class MemDoService {
                 .questDto(questService.getQuestNotMyQuestList(memberId).get(0))
                 .build();
     }
-    @Transactional(readOnly = true)
     public void validateQuestIsDone(Long memberDoId) {
-        if (certificateImageRepository.countByMemberDo_Id(memberDoId)
-                == getMemberDoEntity(memberDoId).getQuest().getIteration())
-            updateQuestStance(memberDoId);
+        System.out.println(getCertificateImageCount(memberDoId));
+        System.out.println(getQuestIteration(memberDoId));
+        System.out.println();
+        if (getCertificateImageCount(memberDoId) == getQuestIteration(memberDoId)) {
+            System.out.println("!!!!!!!!!!!");
+            updateQuestStance(memberDoId);}
     }
+
     @Transactional
     public void validateFailedQuest() {
         List<MemberDo> questList = memDoRepository.findByDueDateLessThan(new Date());
         for (MemberDo entity: questList)
-            if (getCertificateImageCount(entity) < getQuestIteration(entity)) {
+            if (getCertificateImageCount(entity.getId())
+                    < getQuestIteration(entity.getId())) {
                 // 퀘스트 challenger -= 1
                 updateQuestChallenger(entity.getQuest().getId(), -1);
                 // memberDo DB 에서 삭제
                 memDoRepository.delete(entity);
             }
     }
-
-    private long getCertificateImageCount(MemberDo entity) {
-        return certificateImageRepository.countByMemberDo_Id(entity.getId());
+    @Transactional(readOnly = true)
+    private long getCertificateImageCount(Long memberDoId) {
+        return certificateImageRepository.countByMemberDo_Id(memberDoId);
+    }
+    private Integer getQuestIteration(Long memberDoId) {
+        return getMemberDoEntity(memberDoId).getQuest().getIteration();
     }
 
-    private Integer getQuestIteration(MemberDo entity) {
-        return getMemberDoEntity(entity.getId()).getQuest().getIteration();
+    @Transactional(readOnly = true)
+    private MemberDo getMemberDoEntity(Long memberDoId) {
+        return memDoRepository.findById(memberDoId)
+                .orElseThrow(() -> new GreenException(NO_QUEST));
     }
 }

@@ -35,6 +35,7 @@ public class CertificateService {
         );
     }
 
+    @Transactional(readOnly = true)
     // TODO - 깊은 복사인지 확인해야함
     public List<CertificateDto.DetailView> getCertificateImages(Long memberDoId) {
         List<CertificateDto.DetailView> list =

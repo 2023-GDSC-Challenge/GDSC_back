@@ -13,4 +13,6 @@ public interface MemberGetRepository extends JpaRepository<MemberGet, Long> {
 
     @Override
     Optional<MemberGet> findById(Long aLong);
+
+    long countByMember_IdAndChoiceNot(Long id, int choice);
 }

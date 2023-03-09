@@ -69,10 +69,10 @@ public class MemberController {
         return memberService.getMemberDetail(memberId);
     }
 
-    @GetMapping("/get-user-image/{memberId}")
-    public String getUserImage(@PathVariable final Long memberId) {
-        return memberService.getUserImageURL(memberId);
-    }
+//    @GetMapping("/get-user-image/{memberId}")
+//    public String getUserImage(@PathVariable final Long memberId) {
+//        return memberService.getUserImageURL(memberId);
+//    }
 
     @PatchMapping("/update-member-image/{memberId}")
     public String updateMemberImage(@PathVariable final Long memberId,

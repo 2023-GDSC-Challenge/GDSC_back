@@ -45,9 +45,20 @@ public class MemberDto {
         private String email;
         @NotNull
         private String password;
+        @Nullable
+        private String imageUrl;
         @Setter
         @Nullable
         private String title;
+        @Setter
+        @Nullable
+        private Long progressQuests;
+        @Setter
+        @Nullable
+        private Long successQuests;
+        @Setter
+        @Nullable
+        private Long badgeCount;
 
         public static Response fromEntity(Member member) {
             return Response.builder()
@@ -55,6 +66,7 @@ public class MemberDto {
                     .nickname(member.getNickname())
                     .email(member.getEmail())
                     .password(member.getPassword())
+                    .imageUrl(member.getImage())
                     .build();
         }
     }

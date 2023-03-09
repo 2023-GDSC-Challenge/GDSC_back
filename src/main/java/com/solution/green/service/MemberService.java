@@ -4,6 +4,7 @@ import com.solution.green.dto.MemberDto;
 import com.solution.green.entity.Member;
 import com.solution.green.entity.MemberGet;
 import com.solution.green.exception.GreenException;
+import com.solution.green.repository.MemDoRepository;
 import com.solution.green.repository.MemberGetRepository;
 import com.solution.green.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +13,13 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.solution.green.code.GreenCode.QUEST_DONE;
+import static com.solution.green.code.GreenCode.QUEST_ING;
 import static com.solution.green.code.GreenErrorCode.*;
 
 @Service
@@ -22,11 +27,12 @@ import static com.solution.green.code.GreenErrorCode.*;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberGetRepository memberGetRepository;
+    private final MemDoRepository memDoRepository;
 
     @Transactional
     public MemberDto.Response createMember(@NonNull MemberDto.Request request) {
         if (!validateIsEmailRegistered(request.getEmail()))
-            return MemberDto.Response.fromEntity(
+            return getMemberResponse(
                     memberRepository.save(
                             Member.builder()
                                     .email(request.getEmail())
@@ -47,37 +53,34 @@ public class MemberService {
     public boolean validateIsEmailRegistered(@NonNull String email) {
         return memberRepository.existsByEmail(email);
     }
-
-    public String getUserImageURL(Long userId) {
-        return getUserEntityById(userId).getImage();
-    }
-
-    public MemberDto.Response getMemberDetail(Long memberId) {
-        return getResponseWithTitle(getUserEntityById(memberId));
-    }
-
-    private MemberDto.Response getResponseWithTitle(Member member) {
-        MemberDto.Response dto =
-                MemberDto.Response.fromEntity(member);
-        setMemberDtoTitle(dto);
+    @Transactional(readOnly = true)
+    private MemberDto.Response getMemberResponse(Member entity) {
+        MemberDto.Response dto = MemberDto.Response.fromEntity(entity);
+        dto.setTitle(memberGetRepository
+                .findByMember_IdAndChoice(dto.getMemberId(), 2)
+                .getBadge().getName());
+        dto.setProgressQuests(
+                memDoRepository.countByMember_IdAndStance(
+                        entity.getId(), QUEST_ING.getBool()));
+        dto.setSuccessQuests(
+                memDoRepository.countByMember_IdAndStance(
+                        entity.getId(), QUEST_DONE.getBool()));
+        dto.setBadgeCount(
+                memberGetRepository.countByMember_IdAndChoiceNot(
+                        entity.getId(), 2));
         return dto;
     }
-
-    @Transactional(readOnly = true)
-    private void setMemberDtoTitle(MemberDto.Response dto) {
-        dto.setTitle(memberGetRepository.findByMember_IdAndChoice(
-                dto.getMemberId(), 2)
-                .getBadge().getName());
+    public MemberDto.Response getMemberDetail(Long memberId) {
+        return getMemberResponse(getUserEntityById(memberId));
     }
 
     @Transactional(readOnly = true)
     public List<MemberDto.Response> getAllMembers() {
-        List<MemberDto.Response> list = memberRepository.findAll()
-                .stream()
-                .map(MemberDto.Response::fromEntity)
-                .collect(Collectors.toList());
-        for (MemberDto.Response dto : list)
-            setMemberDtoTitle(dto);
+        List<MemberDto.Response> list = new ArrayList<>();
+        List<Member> entityList = memberRepository.findAll();
+        for (Member entity: entityList) {
+            list.add(getMemberResponse(entity));
+        }
         return list;
     }
 
@@ -97,7 +100,7 @@ public class MemberService {
         if (updateRequest.getPassword() != null)
             member.setPassword(updateRequest.getPassword());
 
-        return getResponseWithTitle(memberRepository.save(member));
+        return getMemberResponse(memberRepository.save(member));
     }
 
     @Transactional

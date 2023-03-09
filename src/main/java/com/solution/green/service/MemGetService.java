@@ -47,7 +47,8 @@ public class MemGetService {
     @Transactional
     public MemGetDto.Title updateTitle(Long memberId, Long titleId) {
         MemberGet memberGet =
-                memberGetRepository.findByMember_IdAndChoice(memberId, 2);
+                memberGetRepository.findByMember_IdAndChoice(memberId, 2)
+                        .orElseThrow(() -> new GreenException(NO_BADGE));
         memberGet.setBadge(getBadgeEntity(titleId));
         return MemGetDto.Title.fromEntity(memberGetRepository.save(memberGet));
     }
@@ -72,7 +73,8 @@ public class MemGetService {
     public void updateMainBadge(Long memberId, Long memberGetId) {
         // 이전에 mainBadge 였던 것을 1 -> 0으로 변경
         MemberGet prevMainBadge =
-                memberGetRepository.findByMember_IdAndChoice(memberId, 1);
+                memberGetRepository.findByMember_IdAndChoice(memberId, 1)
+                        .orElseThrow(() -> new GreenException(NO_BADGE));
         prevMainBadge.setChoice(0);
         memberGetRepository.save(prevMainBadge);
         // 새로운 mainBadge 설정 0 -> 1

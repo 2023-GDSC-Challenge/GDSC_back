@@ -56,9 +56,11 @@ public class MemberService {
     @Transactional(readOnly = true)
     private MemberDto.Response getMemberResponse(Member entity) {
         MemberDto.Response dto = MemberDto.Response.fromEntity(entity);
-        dto.setTitle(memberGetRepository
-                .findByMember_IdAndChoice(dto.getMemberId(), 2)
-                .getBadge().getName());
+        if (memberGetRepository.existsByMember_IdAndChoice(dto.getMemberId(), 2))
+            dto.setTitle(memberGetRepository
+                    .findByMember_IdAndChoice(dto.getMemberId(), 2)
+                    .orElseThrow(() -> new GreenException(NO_BADGE))
+                    .getBadge().getName());
         dto.setProgressQuests(
                 memDoRepository.countByMember_IdAndStance(
                         entity.getId(), QUEST_ING.getBool()));

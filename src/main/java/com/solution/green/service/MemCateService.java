@@ -60,7 +60,7 @@ public class MemCateService {
 
     @Transactional(readOnly = true)
     private List<CategoryDto.Home> getCateHomeDtoList(Long memberId) {
-        return memCateRepository.findByMember_IdOrderByPriorityAsc(memberId)
+        return getByMemberIdOrderByPriorityAsc(memberId)
                 .stream()
                 .map(CategoryDto.Home::fromEntity)
                 .collect(Collectors.toList());
@@ -87,10 +87,8 @@ public class MemCateService {
                 .build());
     }
 
-    @Transactional(readOnly = true)
     public void updatePriority(Long memberId, MemCateDto.Request request) {
-        List<MemberCategory> prev =
-                memCateRepository.findByMember_IdOrderByPriorityAsc(memberId);
+        List<MemberCategory> prev = getByMemberIdOrderByPriorityAsc(memberId);
         for (MemberCategory memberCategory : prev) {
             if (memberCategory.getPriority() == 1)
                 updateMemberCategory(memberCategory, request.getFirst());
@@ -101,6 +99,10 @@ public class MemCateService {
             else if (memberCategory.getPriority() == 4)
                 updateMemberCategory(memberCategory, request.getFourth());
         }
+    }
+    @Transactional(readOnly = true)
+    private List<MemberCategory> getByMemberIdOrderByPriorityAsc(Long memberId) {
+        return memCateRepository.findByMember_IdOrderByPriorityAsc(memberId);
     }
 
     @Transactional

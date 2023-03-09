@@ -87,7 +87,7 @@ public class MemberController {
     public void updatePriority(@PathVariable final Long memberId,
                                @Valid @RequestBody MemCateDto.Request request) {
         memCateService.updatePriority(memberId, request);
-    } // TODO - 얘 이상하다 ...
+    }
 
     @PatchMapping("/updateTitle/{memberId}")
     public MemGetDto.Title updateTitle(@PathVariable final Long memberId,

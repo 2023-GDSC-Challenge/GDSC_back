@@ -30,7 +30,7 @@ public class MemberGet implements Serializable {
     private Badge badge;
 
     @Column(name = "choice", length = 1)
-    private Boolean choice;
+    private int choice; // TODO - 0: not choice, 1: choice, 2: title
 
     // TODO - AuditingEntityListener 사용해야함
 }

@@ -3,81 +3,62 @@ package com.solution.green.service;
 import com.solution.green.dto.MemberDto;
 import com.solution.green.entity.Member;
 import com.solution.green.exception.GreenException;
+import com.solution.green.repository.MemDoRepository;
+import com.solution.green.repository.MemberGetRepository;
 import com.solution.green.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static com.solution.green.code.GreenCode.QUEST_DONE;
+import static com.solution.green.code.GreenCode.QUEST_ING;
 import static com.solution.green.code.GreenErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final MemberGetRepository memberGetRepository;
+    private final MemDoRepository memDoRepository;
 
-    @Transactional
     public MemberDto.Response createMember(@NonNull MemberDto.Request request) {
         if (!validateIsEmailRegistered(request.getEmail()))
-            return MemberDto.Response.fromEntity(
-                    memberRepository.save(
+            return getMemberResponse(
+                    saveMemberEntity(
                             Member.builder()
                                     .email(request.getEmail())
                                     .nickname(request.getNickname())
                                     .password(request.getPassword())
-                                    .residence(request.getResidence())
                                     .build()));
         else throw new GreenException(ALREADY_REGISTERED);
     }
 
-    public MemberDto.Response login(@NonNull MemberDto.Login loginMember) {
+    public MemberDto.ToModel login(@NonNull MemberDto.Login loginMember) {
         Member entity = getMemberEntityByEmail(loginMember.getEmail());
         if (loginMember.getPassword().equals(entity.getPassword()))
-            return MemberDto.Response.fromEntity(entity);
+            return MemberDto.ToModel.fromEntity(entity);
         else throw new GreenException(WRONG_PASSWORD);
     }
-    @Transactional(readOnly = true)
-    public boolean validateIsEmailRegistered(@NonNull String email) {
-        return memberRepository.existsByEmail(email);
-    }
 
-    @Transactional
-    public void deleteMember(Long memberId) {
-        memberRepository.deleteById(memberId);
-    }
-
-    public String getUserImageURL(Long userId){
-        return getUserEntityById(userId).getImage();
-    }
     public MemberDto.Response getMemberDetail(Long memberId) {
-        return MemberDto.Response.fromEntity(getUserEntityById(memberId));
-    }
-    @Transactional(readOnly = true)
-    public List<MemberDto.Response> getAllMembers() {
-        return memberRepository.findAll()
-                .stream()
-                .map(MemberDto.Response::fromEntity)
-                .collect(Collectors.toList());
-    }
-    @Transactional(readOnly = true)
-    private Member getMemberEntityByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new GreenException(WRONG_EMAIL));
-    }
-    @Transactional(readOnly = true)
-    private Member getUserEntityById(Long userId) {
-        return memberRepository.findById(userId)
-                .orElseThrow(() -> new GreenException(NO_MEMBER));
+        return getMemberResponse(getUserEntityById(memberId));
     }
 
-    @Transactional
-    public MemberDto.Response updateMember(Long memberId,
-                                           @Nullable MemberDto.Request updateRequest) {
+    public void updateMemberImage(Long userId, String uuid) {
+        Member member = getUserEntityById(userId);
+        member.setImage(uuid);
+        saveMemberEntity(member);
+    }
+
+    public MemberDto.Response updateMember(
+            Long memberId,
+            @Nullable MemberDto.Request updateRequest) {
         Member member = getUserEntityById(memberId);
 
         if (updateRequest.getNickname() != null)
@@ -90,15 +71,71 @@ public class MemberService {
             else throw new GreenException(ALREADY_REGISTERED);
         if (updateRequest.getPassword() != null)
             member.setPassword(updateRequest.getPassword());
-        if (updateRequest.getResidence() != null)
-            member.setResidence(updateRequest.getResidence());
 
-        return MemberDto.Response.fromEntity(memberRepository.save(member));
+        return getMemberResponse(saveMemberEntity(member));
     }
+
     @Transactional
-    public void updateMemberImage(Long userId, String uuid) throws IOException {
-        Member member = getUserEntityById(userId);
-        member.setImage(uuid);
-        memberRepository.save(member);
+    public void deleteMember(Long memberId) {
+        memberRepository.deleteById(memberId);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean validateIsEmailRegistered(@NonNull String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemberDto.Response> getAllMembers() {
+        List<MemberDto.Response> list = new ArrayList<>();
+        List<Member> entityList = memberRepository.findAll();
+        for (Member entity : entityList)
+            list.add(getMemberResponse(entity));
+        return list;
+    }
+
+
+    @Transactional(readOnly = true)
+    private MemberDto.Response getMemberResponse(Member entity) {
+        MemberDto.Response dto = MemberDto.Response.fromEntity(entity);
+        if (memberGetRepository.existsByMember_IdAndChoice(dto.getMemberId(), 2))
+            dto.setTitle(getBadgeName(dto, 2));
+        if (memberGetRepository.existsByMember_IdAndChoice(dto.getMemberId(), 1))
+            dto.setMainBadge(getBadgeName(dto, 1));
+        dto.setProgressQuests(
+                memDoRepository.countByMember_IdAndStance(
+                        entity.getId(), QUEST_ING.getBool()));
+        dto.setSuccessQuests(
+                memDoRepository.countByMember_IdAndStance(
+                        entity.getId(), QUEST_DONE.getBool()));
+        dto.setBadgeCount(
+                memberGetRepository.countByMember_IdAndChoiceNot(
+                        entity.getId(), 2));
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    private String getBadgeName(MemberDto.Response dto, int choice) {
+        return memberGetRepository
+                .findByMember_IdAndChoice(dto.getMemberId(), choice)
+                .orElseThrow(() -> new GreenException(NO_BADGE))
+                .getBadge().getName();
+    }
+
+    @Transactional
+    private Member saveMemberEntity(@NotNull Member member) {
+        return memberRepository.save(member);
+    }
+
+    @Transactional(readOnly = true)
+    private Member getMemberEntityByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GreenException(WRONG_EMAIL));
+    }
+
+    @Transactional(readOnly = true)
+    private Member getUserEntityById(Long userId) {
+        return memberRepository.findById(userId)
+                .orElseThrow(() -> new GreenException(NO_MEMBER));
     }
 }

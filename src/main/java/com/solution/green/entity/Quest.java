@@ -22,8 +22,8 @@ public class Quest implements Serializable {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "category_id")
-    private Category category;
+    @JoinColumn(name = "sub_cate_id", referencedColumnName = "sub_cate_id")
+    private SubCategories subCategory;
 
     @Column(name = "quest_name", length = 100, nullable = false)
     private String name;
@@ -31,8 +31,19 @@ public class Quest implements Serializable {
     @Column(name = "quest_reward", length = 20, nullable = false)
     private Integer reward;
 
-    @Column(name = "memo", length = 200, nullable = true)
-    private String memo;
+    @Column(name = "briefing", length = 200, nullable = true)
+    private String briefing;
+    @Column(name = "information", length = 200, nullable = true)
+    private String information;
+
+    @Column(name = "quest_time_limit", length = 20, nullable = true)
+    private Integer timeLimit;
+
+    @Column(name = "challenger", length = 20, nullable = true)
+    private Integer challenger;
+
+    @Column(name = "iteration", length = 20, nullable = true)
+    private Integer iteration;
 
     // TODO - AuditingEntityListener 사용해야함
 }

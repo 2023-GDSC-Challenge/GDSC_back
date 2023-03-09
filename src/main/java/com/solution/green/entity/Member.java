@@ -27,17 +27,14 @@ public class Member implements Serializable {
     @Column(name = "member_id", length = 20)
     private Long id;
 
-    @Column(name = "member_email", length = 50, nullable = false, unique = true)
+    @Column(name = "email", length = 50, nullable = false, unique = true)
     private String email;
 
-    @Column(name = "member_nickname", length = 30, nullable = false)
+    @Column(name = "nickname", length = 30, nullable = false)
     private String nickname;
 
-    @Column(name = "member_password", length = 50, nullable = false)
+    @Column(name = "password", length = 50, nullable = false)
     private String password;
-
-    @Column(name = "member_residence", length = 100, nullable = true)
-    private String residence;
 
     @Column(name = "member_image", nullable = true)
     private String image;

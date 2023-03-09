@@ -5,6 +5,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -13,12 +14,12 @@ import java.io.Serializable;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "member_category")
-public class MemberCategory implements Serializable {
+@Table(name = "member_do")
+public class MemberDo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "mem_cate_id", length = 20)
+    @Column(name = "mem_do_id", length = 20)
     private Long id;
 
     @ManyToOne
@@ -26,10 +27,16 @@ public class MemberCategory implements Serializable {
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "cate_id", referencedColumnName = "cate_id")
-    private Category category;
-    @Column(name = "priority", length = 10)
-    private Integer priority;
+    @JoinColumn(name = "quest_id", referencedColumnName = "quest_id")
+    private Quest quest;
+
+    @Column(name = "start_date", nullable = true)
+    private Date startDate;
+    @Column(name = "due_date", nullable = true)
+    private Date dueDate;
+
+    @Column(name = "stance", nullable = false)
+    private Boolean stance;
 
     // TODO - AuditingEntityListener 사용해야함
 }

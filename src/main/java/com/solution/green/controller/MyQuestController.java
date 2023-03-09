@@ -69,21 +69,8 @@ public class MyQuestController {
         return URL_PREFIX.getDescription() + uuid;
     }
 
-    /* TODO - 퀘스트 완료 처리 고민해야 함!
-    *   1. 실패 -> questController에 만들자
-    *       1) 자정마다 프론트에서 전체 함수 호출
-    *           - 사진 개수 안 맞는 애들 포기(?)로 변경할 것
-    *               - 그냥 myquest에서 삭제할 것
-    *               - 근데 또 그냥 삭제하면 안됨 -> 삭제한 리스트 전송해줘야하는거아냐?
-    *           - 해당 퀘스트 challenger -= 1
-    *   2. 성공
-    *       1) 사용자가 인증 사진을 업로드 할 경우 체크
-    *           - 인증 사진 개수랑 같으면 -> updateQuestStance
-    *   **** questDB 에 인증 사진 개수 attribute 추가할 것 */
-
     @PatchMapping("/updateQuestGiveUp/{memberDoId}") // TODO - not yet testing
-    public String updateQuestGiveUp(@PathVariable final Long memberDoId) {
+    public void updateQuestGiveUp(@PathVariable final Long memberDoId) {
         memDoService.deleteQuest(memberDoId);
-        return null;
     }
 }

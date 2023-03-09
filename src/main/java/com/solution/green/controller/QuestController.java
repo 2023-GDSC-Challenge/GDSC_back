@@ -42,4 +42,20 @@ public class QuestController {
                                     @PathVariable final Long questId) {
         memDoService.addToMyQuest(memberId, questId); // void로 변경
     }
+
+    /* TODO - 퀘스트 완료 처리 고민해야 함!
+     *   1. 실패 -> questController 에 만들자
+     *       1) 자정마다 프론트에서 전체 함수 호출
+     *           - 사진 개수 안 맞는 애들 포기(?)로 변경할 것
+     *               - 그냥 myquest 에서 삭제할 것
+     *               - 근데 또 그냥 삭제하면 안됨 -> 삭제한 리스트 전송해줘야하는거아냐?
+     *           - 해당 퀘스트 challenger -= 1 */
+    @PatchMapping("/uploadCertificateImage/{memberDoId}")
+    public void uploadCertificateImage() {
+        // TODO - 자정마다 호출해야한다 ~
+        // TODO - due < 현재 인 애들 중
+            // TODO - 사진 개수 < iter 이면
+                // TODO - 탈락된 애들 list 에 추가해야함
+                    // TODO - 그 퀘스트 challenger -=1
+    }
 }

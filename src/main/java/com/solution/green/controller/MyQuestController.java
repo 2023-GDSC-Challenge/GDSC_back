@@ -60,13 +60,13 @@ public class MyQuestController {
             @PathVariable final Long memberDoId,
             @RequestPart(value = "file") MultipartFile file)
             throws IOException {
-        String uuid = gcsService.uploadImage(file);
+        String newUrl = URL_PREFIX.getDescription() + gcsService.uploadImage(file);
         // save image to cloud
-        certificateService.updateCertificateImage(memberDoId, uuid);
+        certificateService.updateCertificateImage(memberDoId, newUrl);
         // check if quest is finished
         memDoService.validateQuestIsDone(memberDoId);
         // return saved URL
-        return URL_PREFIX.getDescription() + uuid;
+        return newUrl;
     }
 
     @PatchMapping("/updateQuestGiveUp/{memberDoId}") // TODO - not yet testing

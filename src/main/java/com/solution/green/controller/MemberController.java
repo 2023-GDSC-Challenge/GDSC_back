@@ -71,16 +71,16 @@ public class MemberController {
 
     @GetMapping("/get-user-image/{memberId}")
     public String getUserImage(@PathVariable final Long memberId) {
-        return URL_PREFIX.getDescription() + memberService.getUserImageURL(memberId);
+        return memberService.getUserImageURL(memberId);
     }
 
     @PatchMapping("/update-member-image/{memberId}")
     public String updateMemberImage(@PathVariable final Long memberId,
                                     @RequestPart(value = "file") MultipartFile file)
             throws IOException {
-        String uuid = gcsService.uploadImage(file);
-        memberService.updateMemberImage(memberId, uuid);
-        return URL_PREFIX.getDescription() + uuid;
+        String newUrl = URL_PREFIX.getDescription() + gcsService.uploadImage(file);
+        memberService.updateMemberImage(memberId, newUrl);
+        return newUrl;
     }
 
     @PutMapping("/update-member/{memberId}")

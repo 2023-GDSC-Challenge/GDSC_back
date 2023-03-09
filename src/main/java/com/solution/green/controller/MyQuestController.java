@@ -4,7 +4,6 @@ import com.solution.green.dto.CertificateDto;
 import com.solution.green.dto.MemDoDto;
 import com.solution.green.service.CertificateService;
 import com.solution.green.service.GCSService;
-import com.solution.green.service.MemCateService;
 import com.solution.green.service.MemDoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +22,6 @@ import static com.solution.green.code.DatabaseName.URL_PREFIX;
 @RequestMapping("/api")
 public class MyQuestController {
     private final MemDoService memDoService;
-    private final MemCateService memCateService;
     private final GCSService gcsService;
     private final CertificateService certificateService;
 
@@ -44,22 +42,19 @@ public class MyQuestController {
     }
 
     @GetMapping("/getMyQuestDetailView/{memberDoId}")
-    public MemDoDto.DetailView getMyQuestDetailView(
-            @PathVariable final Long memberDoId) {
+    public MemDoDto.DetailView getMyQuestDetailView(@PathVariable final Long memberDoId) {
         return memDoService.getMyQuestDetailView(memberDoId);
     }
 
     @GetMapping("/getCertificateImages/{memberDoId}")
-    public List<CertificateDto.DetailView> getCertificateImages(
-            @PathVariable final Long memberDoId) {
+    public List<CertificateDto.DetailView> getCertificateImages(@PathVariable final Long memberDoId) {
         return certificateService.getCertificateImages(memberDoId);
     }
 
     @PatchMapping("/uploadCertificateImage/{memberDoId}")
     public String uploadCertificateImage(
             @PathVariable final Long memberDoId,
-            @RequestPart(value = "file") MultipartFile file)
-            throws IOException {
+            @RequestPart(value = "file") MultipartFile file) throws IOException {
         String newUrl = URL_PREFIX.getDescription() + gcsService.uploadImage(file);
         // save image to cloud
         certificateService.updateCertificateImage(memberDoId, newUrl);
@@ -69,7 +64,7 @@ public class MyQuestController {
         return newUrl;
     }
 
-    @PatchMapping("/updateQuestGiveUp/{memberDoId}") // TODO - not yet testing
+    @PatchMapping("/updateQuestGiveUp/{memberDoId}")
     public void updateQuestGiveUp(@PathVariable final Long memberDoId) {
         memDoService.deleteQuest(memberDoId);
     }

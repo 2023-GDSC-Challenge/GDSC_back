@@ -101,32 +101,25 @@ public class MemDoService {
         Long cateId = questRepository.findById(memberDo.getQuest().getId())
                 .orElseThrow(() -> new GreenException(NO_QUEST))
                 .getSubCategory().getCategory().getId();
-        // 바꾸기 전의 rate 저장
-        Long prevDoneCount = memCateService.getDoneQuestPerCategory(cateId);
-        Long count = memCateService.getQuestNumPerCategory(cateId);
-        Double prevRate = Double.valueOf(0);
-        if (!prevDoneCount.equals(0))
-            prevRate = Double.valueOf(prevDoneCount / count);
-        System.out.println(prevRate);
-        System.out.println();
+
         // stance 변경 false -> true(done)
         memberDo.setStance(QUEST_DONE.getBool());
-        MemberDo tmp = memDoRepository.save(memberDo); // TODO - 얘도 안된다
-        System.out.println(memDoRepository.findById(tmp.getId()).get().getStance());
-        System.out.println();
-        // 바꾸고 나서의 rate 비교 -> 업데이트된 뱃지가 있으면 마이겟 디비에 추가
-        Double curRate = Double.valueOf(prevDoneCount + 1 / count);
-        System.out.println(curRate);
+
+        // 진행률 세팅
+        Long doneCount =
+                memCateService.getDoneQuestPerCategory(member.getId(), cateId);
+        Long count = memCateService.getQuestNumPerCategory(cateId);
+        Double curRate = (double) doneCount / count * 100;
+        Double prevRate = (double) (doneCount - 1) / count * 100;
+
+        // 받을 뱃지 있나 확인
         for (Double i : achievementList)
-            if (prevRate < i && i <= curRate) {
+            if (prevRate < i && i <= curRate)
                 memberGetRepository.save(MemberGet.builder()
                         .member(member)
                         .badge(badgeRepository
                                 .findByCategory_IdAndAchievement(cateId, i))
                         .build());
-//                System.out.println();
-            }
-//        System.out.println();
     }
     
     @Transactional(readOnly = true)
@@ -167,12 +160,8 @@ public class MemDoService {
                 .build();
     }
     public void validateQuestIsDone(Long memberDoId) {
-        System.out.println(getCertificateImageCount(memberDoId));
-        System.out.println(getQuestIteration(memberDoId));
-        System.out.println();
-        if (getCertificateImageCount(memberDoId) == getQuestIteration(memberDoId)) {
-            System.out.println("!!!!!!!!!!!");
-            updateQuestStance(memberDoId);}
+        if (getCertificateImageCount(memberDoId) == getQuestIteration(memberDoId))
+            updateQuestStance(memberDoId);
     }
 
     @Transactional

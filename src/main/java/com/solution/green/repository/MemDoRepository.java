@@ -15,6 +15,8 @@ public interface MemDoRepository extends JpaRepository<MemberDo, Long> {
     long countByQuest_Id(Long id);
     long countByQuest_SubCategory_CategoryAndStance(Category category, Boolean stance);
 
+    long countByMember_IdAndQuest_SubCategory_CategoryAndStance(Long id, Category category, Boolean stance);
+
     long countByMember_IdAndStance(Long id, Boolean stance);
 
     List<MemberDo> findByMember_Id(Long id);

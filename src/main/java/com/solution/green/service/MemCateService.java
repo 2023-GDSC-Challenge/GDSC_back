@@ -29,21 +29,22 @@ public class MemCateService {
     public List<CategoryDto.Home> getMemberCategoryHome(Long memberId) {
         List<CategoryDto.Home> list = getCateHomeDtoList(memberId);
         for (CategoryDto.Home cate : list)
-            cate.setAchieveRate(setAchieveRateFromCateId(cate.getId()));
+            cate.setAchieveRate(setAchieveRateFromCateId(memberId, cate.getId()));
         return list;
     }
 
-    private Double setAchieveRateFromCateId(Long categoryId) {
-        Double doneCount = Double.valueOf(getDoneQuestPerCategory(categoryId));
+    private Double setAchieveRateFromCateId(Long memberId, Long categoryId) {
+        Double doneCount = (double) getDoneQuestPerCategory(memberId, categoryId);
         if (doneCount.equals(Double.valueOf(0))) return Double.valueOf(0);
         else
             return doneCount / Double.valueOf(getQuestNumPerCategory(categoryId)) * 100;
     }
 
     @Transactional(readOnly = true)
-    public Long getDoneQuestPerCategory(Long categoryId) {
-        return memDoRepository.countByQuest_SubCategory_CategoryAndStance(
-                getCategoryEntity(categoryId), QUEST_DONE.getBool()
+    public Long getDoneQuestPerCategory(Long memberId, Long categoryId) {
+        return memDoRepository
+                .countByMember_IdAndQuest_SubCategory_CategoryAndStance(
+                        memberId, getCategoryEntity(categoryId), QUEST_DONE.getBool()
         );
     }
 

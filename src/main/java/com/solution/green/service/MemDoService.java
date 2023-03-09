@@ -151,10 +151,10 @@ public class MemDoService {
     @Transactional(readOnly = true)
     public MemDoDto.ListView getJustOneQuestToMain(Long memberId) {
         // 진행중인 퀘스트가 있으면 -> 그 중 가장 우선순위 높은거
-        if (memDoRepository.existsByMember_IdAndStance(memberId, QUEST_DONE.getBool()))
+        if (memDoRepository.existsByMember_IdAndStance(memberId, QUEST_ING.getBool()))
             return MemDoDto.ListView.fromEntity(
                     memDoRepository.findFirstByMember_IdAndStanceOrderByDueDateAsc(
-                            memberId, QUEST_DONE.getBool())
+                            memberId, QUEST_ING.getBool())
             );
         // 없으면 -> 퀘스트리스트 중 가장 우선순위 높은거
         else return MemDoDto.ListView.builder()

@@ -21,13 +21,13 @@ public class CategoryController {
     private final MemDoService memDoService;
     private final QuestService questService;
 
-    @GetMapping("/getMemberCategory/{memberId}")
-    public List<CategoryDto.Home> getMemberCategory(@PathVariable final Long memberId) {
-        return memCateService.getMemberCategoryHome(memberId);
-    }
-
     @GetMapping("/getJustOneQuestToMain/{memberId}")
     public MemDoDto.ListView getJustOneQuestToMain(@PathVariable final Long memberId) {
         return memDoService.getJustOneQuestToMain(memberId);
+    }
+
+    @GetMapping("/getMemberCategory/{memberId}")
+    public List<CategoryDto.Home> getMemberCategory(@PathVariable final Long memberId) {
+        return memCateService.getMemberCategoryHome(memberId);
     }
 }

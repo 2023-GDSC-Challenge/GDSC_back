@@ -163,4 +163,10 @@ public class MemDoService {
                 .questDto(questService.getQuestNotMyQuestList(memberId).get(0))
                 .build();
     }
+    @Transactional(readOnly = true)
+    public void validateQuestIsDone(Long memberDoId) {
+        if (certificateImageRepository.countByMemberDo_Id(memberDoId)
+                == getMemberDoEntity(memberDoId).getQuest().getIteration())
+            updateQuestStance(memberDoId);
+    }
 }

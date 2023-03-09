@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CertificateImageRepository extends JpaRepository<CertificateImage, Long> {
+    long countByMemberDo_Id(Long id);
 
     List<CertificateImage> findByMemberDo_IdOrderBySubmitDateAsc(Long id);
 

@@ -42,5 +42,8 @@ public class Quest implements Serializable {
     @Column(name = "challenger", length = 20, nullable = true)
     private Integer challenger;
 
+    @Column(name = "iteration", length = 20, nullable = true)
+    private Integer iteration;
+
     // TODO - AuditingEntityListener 사용해야함
 }

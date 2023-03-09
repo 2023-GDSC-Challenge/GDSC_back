@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.solution.green.code.GreenCode.QUEST_DONE;
-import static com.solution.green.code.GreenErrorCode.*;
+import static com.solution.green.code.GreenErrorCode.NO_CATEGORY;
+import static com.solution.green.code.GreenErrorCode.NO_MEMBER;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +46,7 @@ public class MemCateService {
         return memDoRepository
                 .countByMember_IdAndQuest_SubCategory_CategoryAndStance(
                         memberId, getCategoryEntity(categoryId), QUEST_DONE.getBool()
-        );
+                );
     }
 
     @Transactional(readOnly = true)
@@ -101,6 +102,7 @@ public class MemCateService {
                 updateMemberCategory(memberCategory, request.getFourth());
         }
     }
+
     @Transactional(readOnly = true)
     private List<MemberCategory> getByMemberIdOrderByPriorityAsc(Long memberId) {
         return memCateRepository.findByMember_IdOrderByPriorityAsc(memberId);
@@ -109,9 +111,6 @@ public class MemCateService {
     @Transactional
     private void updateMemberCategory(MemberCategory memberCategory, Long cateId) {
         memberCategory.setCategory(getCategoryEntity(cateId));
-        MemberCategory tmp = memCateRepository.save(memberCategory);
-        System.out.println(tmp.getCategory().getId());
-        System.out.println(memCateRepository.findById(tmp.getId()).orElseThrow().getCategory().getId());
-        System.out.println(")_____________");
+        memCateRepository.save(memberCategory);
     }
 }

@@ -17,7 +17,7 @@ import java.util.List;
 public class BadgeController {
     private final MemGetService memGetService;
 
-    @GetMapping("/getMyBadge/{memberId}") // TODO - 테스트케이스가 쌓여야 할 것 같다
+    @GetMapping("/getMyBadge/{memberId}")
     public List<MemGetDto.List> getMyBadge(@PathVariable final Long memberId) {
         return memGetService.getMyBadge(memberId);
     }

@@ -121,7 +121,7 @@ public class MemDoService {
                                 .findByCategory_IdAndAchievement(cateId, i))
                         .build());
     }
-    
+
     @Transactional(readOnly = true)
     private Quest getQuestEntity(Long questId) {
         return questRepository.findById(questId)
@@ -153,12 +153,13 @@ public class MemDoService {
                     memDoRepository.findFirstByMember_IdAndStanceOrderByDueDateAsc(
                             memberId, QUEST_ING.getBool())
             );
-        // 없으면 -> 퀘스트리스트 중 가장 우선순위 높은거
+            // 없으면 -> 퀘스트리스트 중 가장 우선순위 높은거
         else return MemDoDto.ListView.builder()
                 .memDoId(Long.valueOf(-1)) // DB 에 저장된 값이 X -> 임의로 설정
                 .questDto(questService.getQuestNotMyQuestList(memberId).get(0))
                 .build();
     }
+
     public void validateQuestIsDone(Long memberDoId) {
         if (getCertificateImageCount(memberDoId) == getQuestIteration(memberDoId))
             updateQuestStance(memberDoId);
@@ -167,7 +168,7 @@ public class MemDoService {
     @Transactional
     public void validateFailedQuest() {
         List<MemberDo> questList = memDoRepository.findByDueDateLessThan(new Date());
-        for (MemberDo entity: questList)
+        for (MemberDo entity : questList)
             if (getCertificateImageCount(entity.getId())
                     < getQuestIteration(entity.getId())) {
                 // 퀘스트 challenger -= 1
@@ -176,10 +177,12 @@ public class MemDoService {
                 memDoRepository.delete(entity);
             }
     }
+
     @Transactional(readOnly = true)
     private long getCertificateImageCount(Long memberDoId) {
         return certificateImageRepository.countByMemberDo_Id(memberDoId);
     }
+
     private Integer getQuestIteration(Long memberDoId) {
         return getMemberDoEntity(memberDoId).getQuest().getIteration();
     }

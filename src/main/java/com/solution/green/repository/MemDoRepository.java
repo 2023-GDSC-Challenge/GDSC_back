@@ -6,10 +6,12 @@ import com.solution.green.entity.Category;
 import com.solution.green.entity.MemberDo;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 public interface MemDoRepository extends JpaRepository<MemberDo, Long> {
+    List<MemberDo> findByDueDateLessThan(Date dueDate);
     long countByQuest_Id(Long id);
     long countByQuest_SubCategory_CategoryAndStance(Category category, Boolean stance);
 

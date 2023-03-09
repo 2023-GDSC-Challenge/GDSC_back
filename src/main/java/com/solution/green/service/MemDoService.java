@@ -1,7 +1,6 @@
 package com.solution.green.service;
 
 import com.solution.green.dto.MemDoDto;
-import com.solution.green.dto.QuestDto;
 import com.solution.green.entity.Member;
 import com.solution.green.entity.MemberDo;
 import com.solution.green.entity.MemberGet;
@@ -168,5 +167,24 @@ public class MemDoService {
         if (certificateImageRepository.countByMemberDo_Id(memberDoId)
                 == getMemberDoEntity(memberDoId).getQuest().getIteration())
             updateQuestStance(memberDoId);
+    }
+    @Transactional
+    public void validateFailedQuest() {
+        List<MemberDo> questList = memDoRepository.findByDueDateLessThan(new Date());
+        for (MemberDo entity: questList)
+            if (getCertificateImageCount(entity) < getQuestIteration(entity)) {
+                // 퀘스트 challenger -= 1
+                updateQuestChallenger(entity.getQuest().getId(), -1);
+                // memberDo DB 에서 삭제
+                memDoRepository.delete(entity);
+            }
+    }
+
+    private long getCertificateImageCount(MemberDo entity) {
+        return certificateImageRepository.countByMemberDo_Id(entity.getId());
+    }
+
+    private Integer getQuestIteration(MemberDo entity) {
+        return getMemberDoEntity(entity.getId()).getQuest().getIteration();
     }
 }

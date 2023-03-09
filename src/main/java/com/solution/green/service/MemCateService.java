@@ -66,7 +66,7 @@ public class MemCateService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void createPriority(Long memberId, MemCateDto.Request request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new GreenException(NO_MEMBER));
@@ -91,20 +91,24 @@ public class MemCateService {
     public void updatePriority(Long memberId, MemCateDto.Request request) {
         List<MemberCategory> prev =
                 memCateRepository.findByMember_IdOrderByPriorityAsc(memberId);
-        for (MemberCategory memberCategory : prev)
-            if (memberCategory.getPriority().equals(1))
+        for (MemberCategory memberCategory : prev) {
+            if (memberCategory.getPriority() == 1)
                 updateMemberCategory(memberCategory, request.getFirst());
-            else if (memberCategory.getPriority().equals(2))
+            else if (memberCategory.getPriority() == 2)
                 updateMemberCategory(memberCategory, request.getSecond());
-            else if (memberCategory.getPriority().equals(3))
+            else if (memberCategory.getPriority() == 3)
                 updateMemberCategory(memberCategory, request.getThird());
-            else if (memberCategory.getPriority().equals(4))
+            else if (memberCategory.getPriority() == 4)
                 updateMemberCategory(memberCategory, request.getFourth());
+        }
     }
 
     @Transactional
     private void updateMemberCategory(MemberCategory memberCategory, Long cateId) {
         memberCategory.setCategory(getCategoryEntity(cateId));
-        memCateRepository.save(memberCategory);
+        MemberCategory tmp = memCateRepository.save(memberCategory);
+        System.out.println(tmp.getCategory().getId());
+        System.out.println(memCateRepository.findById(tmp.getId()).orElseThrow().getCategory().getId());
+        System.out.println(")_____________");
     }
 }

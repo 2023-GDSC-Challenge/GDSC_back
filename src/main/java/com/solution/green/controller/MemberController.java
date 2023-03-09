@@ -9,7 +9,6 @@ import com.solution.green.service.MemGetService;
 import com.solution.green.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,29 +35,23 @@ public class MemberController {
         return memberService.createMember(request);
     }
 
-    @PostMapping("/createPriority/{memberId}") // TODO - not yet testing
+    @PostMapping("/createPriority/{memberId}")
     public void createPriority(@PathVariable final Long memberId,
                                @Valid @RequestBody MemCateDto.Request request) {
         memCateService.createPriority(memberId, request);
     }
-    @PostMapping("/createTitle/{memberId}") // TODO - not yet testing
+
+    @PostMapping("/createTitle/{memberId}")
     public MemGetDto.Title createTitle(@PathVariable final Long memberId,
                                        @Valid @RequestBody Long titleId) {
         return memGetService.createTitle(memberId, titleId);
     }
-    
-    @PatchMapping("/updatePriority/{memberId}") // TODO - not yet testing
-    public void updatePriority(
-            @PathVariable final Long memberId,
-            @Valid @RequestBody MemCateDto.Request request) {
-        memCateService.updatePriority(memberId, request);
+
+    @DeleteMapping("/delete-member/{memberId}")
+    public void deleteMember(@PathVariable final Long memberId) {
+        memberService.deleteMember(memberId);
     }
-    @PatchMapping("/updateTitle/{memberId}") // TODO - not yet testing
-    public MemGetDto.Title updateTitle(
-            @PathVariable final Long memberId,
-            @Valid @RequestBody Long titleId) {
-        return memGetService.updateTitle(memberId, titleId);
-    }
+
     @GetMapping("/get-all-members")
     public List<MemberDto.Response> getAllMembers() {
         return memberService.getAllMembers();
@@ -69,10 +62,17 @@ public class MemberController {
         return memberService.getMemberDetail(memberId);
     }
 
-//    @GetMapping("/get-user-image/{memberId}")
-//    public String getUserImage(@PathVariable final Long memberId) {
-//        return memberService.getUserImageURL(memberId);
-//    }
+    @PostMapping("/login")
+    public MemberDto.ToModel login(@Valid @RequestBody MemberDto.Login loginMember) {
+        return memberService.login(loginMember);
+    }
+
+    @PutMapping("/update-member/{memberId}")
+    public MemberDto.Response updateMember(
+            @PathVariable final Long memberId,
+            @Valid @RequestBody MemberDto.Request request) {
+        return memberService.updateMember(memberId, request);
+    }
 
     @PatchMapping("/update-member-image/{memberId}")
     public String updateMemberImage(@PathVariable final Long memberId,
@@ -83,21 +83,15 @@ public class MemberController {
         return newUrl;
     }
 
-    @PutMapping("/update-member/{memberId}")
-    public MemberDto.Response updateMember(
-            @PathVariable final Long memberId,
-            @Valid @RequestBody MemberDto.Request request) {
-        return memberService.updateMember(memberId, request);
-    }
+    @PatchMapping("/updatePriority/{memberId}")
+    public void updatePriority(@PathVariable final Long memberId,
+                               @Valid @RequestBody MemCateDto.Request request) {
+        memCateService.updatePriority(memberId, request);
+    } // TODO - 얘 이상하다 ...
 
-    @DeleteMapping("/delete-member/{memberId}")
-    public void deleteMember(@PathVariable final Long memberId) {
-        memberService.deleteMember(memberId);
+    @PatchMapping("/updateTitle/{memberId}")
+    public MemGetDto.Title updateTitle(@PathVariable final Long memberId,
+                                       @Valid @RequestBody Long titleId) {
+        return memGetService.updateTitle(memberId, titleId);
     }
-
-    @PostMapping("/login")
-    public MemberDto.ToModel login(@Valid @RequestBody MemberDto.Login loginMember) {
-        return memberService.login(loginMember);
-    }
-
 }

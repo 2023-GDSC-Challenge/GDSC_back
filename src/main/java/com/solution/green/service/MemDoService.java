@@ -56,20 +56,16 @@ public class MemDoService {
         );
     }
 
-    public List<MemDoDto.ListView> getMyQuestNotYetList(Long memberId) {
-        return getMyQuestList(memberId, 0);
-    }
-
     public List<MemDoDto.ListView> getMyQuestIngList(Long memberId) {
-        return getMyQuestList(memberId, 1);
+        return getMyQuestList(memberId, QUEST_ING.getBool());
     }
 
     public List<MemDoDto.ListView> getMyQuestDoneList(Long memberId) {
-        return getMyQuestList(memberId, 2);
+        return getMyQuestList(memberId, QUEST_DONE.getBool());
     }
 
     @Transactional(readOnly = true)
-    public List<MemDoDto.ListView> getMyQuestList(Long memberId, int stance) {
+    public List<MemDoDto.ListView> getMyQuestList(Long memberId, boolean stance) {
         return memDoRepository
                 .findByMember_IdAndStanceOrderByDueDateAsc(memberId, stance)
                 .stream()

@@ -25,12 +25,6 @@ public class MyQuestController {
     private final GCSService gcsService;
     private final CertificateService certificateService;
 
-
-    @GetMapping("/getMyQuestNotYetList/{memberId}")
-    public List<MemDoDto.ListView> getMyQuestNotYetList(@PathVariable final Long memberId) {
-        return memDoService.getMyQuestNotYetList(memberId);
-    }
-
     @GetMapping("/getMyQuestIngList/{memberId}")
     public List<MemDoDto.ListView> getMyQuestIngList(@PathVariable final Long memberId) {
         return memDoService.getMyQuestIngList(memberId);

@@ -23,7 +23,7 @@ public interface MemDoRepository extends JpaRepository<MemberDo, Long> {
 
     boolean existsByMember_IdAndStance(Long id, Boolean stance);
 
-    List<MemberDo> findByMember_IdAndStanceOrderByDueDateAsc(Long id, int stance);
+    List<MemberDo> findByMember_IdAndStanceOrderByDueDateAsc(Long id, Boolean stance);
 
     MemberDo findFirstByMember_IdAndStanceOrderByDueDateAsc(Long id, Boolean stance);
 

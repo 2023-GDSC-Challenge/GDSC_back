@@ -170,12 +170,8 @@ public class MemDoService {
         List<MemberDo> questList = memDoRepository.findByDueDateLessThan(new Date());
         for (MemberDo entity : questList)
             if (getCertificateImageCount(entity.getId())
-                    < getQuestIteration(entity.getId())) {
-                // 퀘스트 challenger -= 1
-                updateQuestChallenger(entity.getQuest().getId(), -1);
-                // memberDo DB 에서 삭제
-                memDoRepository.delete(entity);
-            }
+                    < getQuestIteration(entity.getId()))
+                deleteQuest(entity.getId());
     }
 
     @Transactional(readOnly = true)

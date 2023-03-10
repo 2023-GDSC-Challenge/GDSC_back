@@ -20,10 +20,10 @@ public enum GreenErrorCode {
                     "Please withdraw from the trip to deregister."),
 
     NO_MEMBER(500, "MEMBER-ERR-500", "There is no corresponding MEMBER."),
-    NO_PERSON(500, "PERSON-ERR-500", "There is no corresponding PERSON."),
-    NO_PARTI(500, "PARTI-ERR-500", "There is no corresponding PARTICIPANT."),
-    NO_MANAGER(500, "EVENT-ERR-500","There is no MANAGER for the event."),
-    NO_SUPERUSER(500, "TRAVEL-SUPERUSER-ERROR", "There is no SuperUser on this trip."),
+    NO_CATEGORY(500, "CATEGORY-ERR-500", "There is no corresponding CATEGORY."),
+    NO_QUEST(500, "QUEST-ERR-500", "There is no corresponding QUEST."),
+    NO_MEM_DO(500, "MEM_DO-ERR-500","There is no quest that user challenging."),
+    NO_BADGE(500, "BADGE-SUPERUSER-ERROR", "There is no corresponding BADGE."),
     NO_TRAVEL(500, "TRAVEL-ERR-500","There is no corresponding TRAVEL."),
     NO_EVENT(500, "EVENT-ERR-500","There is no corresponding EVENT."),
 

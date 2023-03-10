@@ -18,12 +18,14 @@ public class Category implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id", length = 20)
+    @Column(name = "cate_id", length = 20)
     private Long id;
-    @Column(name = "category_name", length = 50, nullable = false, unique = true)
+    @Column(name = "cate_name", length = 50, nullable = false, unique = true)
     private String name;
-    @Column(name = "parent_category", length = 50, nullable = false)
-    private String parentCategory;
+    @Column(name = "cate_icon", nullable = true)
+    private String icon;
 
+    @Column(name = "colorCode", length = 20, nullable = true)
+    private String colorCode;
     // TODO - AuditingEntityListener 사용해야함
 }

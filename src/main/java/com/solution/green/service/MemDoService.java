@@ -94,12 +94,16 @@ public class MemDoService {
         // setting
         MemberDo memberDo = getMemberDoEntity(memberDoId);
         Member member = memberDo.getMember();
-        Long cateId = questRepository.findById(memberDo.getQuest().getId())
-                .orElseThrow(() -> new GreenException(NO_QUEST))
-                .getSubCategory().getCategory().getId();
+        Quest quest = questRepository.findById(memberDo.getQuest().getId())
+                .orElseThrow(() -> new GreenException(NO_QUEST));
+        Long cateId = quest.getSubCategory().getCategory().getId();
 
         // stance 변경 false -> true(done)
         memberDo.setStance(QUEST_DONE.getBool());
+
+        // 퀘스트 완료 시 멤버 reward up
+        member.setReward(member.getReward() + quest.getReward());
+        memberRepository.save(member);
 
         // 진행률 세팅
         Long doneCount =

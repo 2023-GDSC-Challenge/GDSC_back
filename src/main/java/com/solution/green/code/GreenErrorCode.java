@@ -6,11 +6,18 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum GreenErrorCode {
-    ALREADY_EXISTED(500, "CREATE-PERSON-ERR-500","have already been invited."),
     ALREADY_REGISTERED(500, "CREATE-USER-ERR-500","is already registered."),
-
     WRONG_PASSWORD(500, "LOGIN-ERR-500","Invalid password."),
     WRONG_EMAIL(500,"LOGIN-ERR-500","There is no such email information."),
+    NO_MEMBER(500, "MEMBER-ERR-500", "There is no corresponding MEMBER."),
+    NO_CATEGORY(500, "CATEGORY-ERR-500", "There is no corresponding CATEGORY."),
+    NO_QUEST(500, "QUEST-ERR-500", "There is no corresponding QUEST."),
+    NO_MEM_DO(500, "MEM_DO-ERR-500","There is no quest that user challenging."),
+    NO_BADGE(500, "BADGE-SUPERUSER-ERROR", "There is no corresponding BADGE."),
+
+
+
+    ALREADY_EXISTED(500, "CREATE-PERSON-ERR-500","have already been invited."),
 
     INVALID_DELETE_SUPERUSER(500, "INVALID-ERR-500", "SuperUser cannot be deleted from Travel."),
     INVALID_DELETE_NOTSUPERUSER(500, "INVALID-ERR-500", "Only SuperUser can delete the Travel."),
@@ -19,11 +26,6 @@ public enum GreenErrorCode {
             "This Person has participated Travel. \n" +
                     "Please withdraw from the trip to deregister."),
 
-    NO_MEMBER(500, "MEMBER-ERR-500", "There is no corresponding MEMBER."),
-    NO_CATEGORY(500, "CATEGORY-ERR-500", "There is no corresponding CATEGORY."),
-    NO_QUEST(500, "QUEST-ERR-500", "There is no corresponding QUEST."),
-    NO_MEM_DO(500, "MEM_DO-ERR-500","There is no quest that user challenging."),
-    NO_BADGE(500, "BADGE-SUPERUSER-ERROR", "There is no corresponding BADGE."),
     NO_TRAVEL(500, "TRAVEL-ERR-500","There is no corresponding TRAVEL."),
     NO_EVENT(500, "EVENT-ERR-500","There is no corresponding EVENT."),
 

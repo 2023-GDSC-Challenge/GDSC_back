@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static com.solution.green.code.GreenCode.QUEST_DONE;
 import static com.solution.green.code.GreenCode.QUEST_ING;
@@ -28,16 +29,21 @@ public class MemberService {
     private final MemDoRepository memDoRepository;
 
     public MemberDto.Response createMember(@NonNull MemberDto.Request request) {
-        if (!validateIsEmailRegistered(request.getEmail()))
-            return getMemberResponse(
-                    saveMemberEntity(
-                            Member.builder()
-                                    .email(request.getEmail())
-                                    .nickname(request.getNickname())
-                                    .password(request.getPassword())
-                                    .build()));
-        else throw new GreenException(ALREADY_REGISTERED);
+        if (!validateIsEmailRegistered(request.getEmail())) {
+            Member member = saveMemberEntity(
+                    Member.builder()
+                            .email(request.getEmail())
+                            .nickname(request.getNickname())
+                            .password(request.getPassword())
+                            .build());
+            String randomString = setRandomNumber(member.getId());
+            member.setRandomCode(randomString);
+            saveMemberEntity(member);
+            return getMemberResponse(member);
+
+        } else throw new GreenException(ALREADY_REGISTERED);
     }
+
 
     public MemberDto.ToModel login(@NonNull MemberDto.Login loginMember) {
         Member entity = getMemberEntityByEmail(loginMember.getEmail());
@@ -88,12 +94,28 @@ public class MemberService {
     @Transactional(readOnly = true)
     public List<MemberDto.Response> getAllMembers() {
         List<MemberDto.Response> list = new ArrayList<>();
-        List<Member> entityList = memberRepository.findAll();
+        List<Member> entityList = memberRepository.findByIdNotNullOrderByRewardDesc();
         for (Member entity : entityList)
             list.add(getMemberResponse(entity));
         return list;
     }
 
+    public String getMemberRandomCode(Long memberId) {
+        return getUserEntityById(memberId).getRandomCode();
+    }
+
+    private String setRandomNumber(Long id) {
+        int leftLimit = 48; // numeral '0'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 7;
+        Random random = new Random();
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+        return id.toString() + generatedString;
+    }
 
     @Transactional(readOnly = true)
     private MemberDto.Response getMemberResponse(Member entity) {
@@ -127,6 +149,7 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
+
     @Transactional(readOnly = true)
     private Member getMemberEntityByEmail(String email) {
         return memberRepository.findByEmail(email)
@@ -138,4 +161,6 @@ public class MemberService {
         return memberRepository.findById(userId)
                 .orElseThrow(() -> new GreenException(NO_MEMBER));
     }
+
+
 }

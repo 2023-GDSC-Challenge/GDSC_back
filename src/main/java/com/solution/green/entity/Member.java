@@ -8,10 +8,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 
+@DynamicInsert
 @Getter
 @Setter
 @Builder
@@ -40,7 +43,10 @@ public class Member implements Serializable {
     private String image;
 
     @Column(name = "member_reward", length = 20)
+    @ColumnDefault("0")
     private Integer reward;
 
+    @Column(name = "random_code", length = 50)
+    private String randomCode;
     // TODO - AuditingEntityListener 사용해야함
 }

@@ -45,6 +45,8 @@ public class MemberDto {
         private String email;
         @NotNull
         private String password;
+        @NotNull
+        private Integer reward;
         @Nullable
         private String imageUrl;
         @Setter
@@ -69,6 +71,7 @@ public class MemberDto {
                     .nickname(member.getNickname())
                     .email(member.getEmail())
                     .password(member.getPassword())
+                    .reward(member.getReward())
                     .imageUrl(member.getImage())
                     .build();
         }

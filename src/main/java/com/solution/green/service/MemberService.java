@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.solution.green.code.GreenCode.QUEST_DONE;
@@ -172,5 +174,11 @@ public class MemberService {
                 .orElseThrow(() -> new GreenException(NO_MEMBER));
     }
 
-
+    public int getMemberRank(Long memberId) {
+        List<MemberDto.Response> list = getAllMembers();
+        for (int i = 0; i < list.size(); i++)
+            if (list.get(i).getMemberId().equals(memberId))
+                return i+1;
+        return -1;
+    }
 }

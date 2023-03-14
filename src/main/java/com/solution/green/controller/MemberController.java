@@ -67,6 +67,11 @@ public class MemberController {
         return memberService.getMemberRandomCode(memberId);
     }
 
+    @GetMapping("/getMemberRank/{memberId}")
+    public int getMemberRank(@PathVariable final Long memberId) {
+        return memberService.getMemberRank(memberId);
+    }
+
     @PostMapping("/login")
     public MemberDto.ToModel login(@Valid @RequestBody MemberDto.Login loginMember) {
         return memberService.login(loginMember);

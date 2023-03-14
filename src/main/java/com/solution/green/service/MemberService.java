@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Stream;
 
 import static com.solution.green.code.GreenCode.QUEST_DONE;
 import static com.solution.green.code.GreenCode.QUEST_ING;
@@ -110,11 +111,20 @@ public class MemberService {
         int targetStringLength = 7;
         Random random = new Random();
         String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97) && (i <= 100 || i >= 109))
+                // id 변환해서 나오는 문자도 filter 로 제외함
                 .limit(targetStringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
-        return id.toString() + generatedString;
+        return setIdToRandomNumber(id) + generatedString;
+    }
+
+    private String setIdToRandomNumber(Long id) {
+        int[] arrNum = Stream.of(String.valueOf(id).split(""))
+                .mapToInt(Integer::parseInt).toArray();
+        String result = "";
+        for (int num : arrNum) result += String.valueOf((char) (num+100));
+        return result;
     }
 
     @Transactional(readOnly = true)

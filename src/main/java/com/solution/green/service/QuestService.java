@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.solution.green.code.GreenErrorCode.NO_PRIORITY;
 import static com.solution.green.code.GreenErrorCode.NO_QUEST;
 
 
@@ -35,13 +36,23 @@ public class QuestService {
     public List<QuestDto.ListView> getQuestNotMyQuestList(Long memberId) {
         // member 가 myQuest 에 추가 안한 리스트만 뽑기
         List<QuestDto.ListView> list = getQuestList(memberId);
+
         // 그 리스트를 사용자 수에 따라 sort
-        List<QuestDto.ListView> editList1 = setNowChallenger(list);
-        Collections.sort(editList1, (d1, d2) -> d2.getChallenger() - d1.getChallenger());
-        // 정렬된 리스트를 1/3 으로 분할
-        List<List<QuestDto.ListView>> editList2 = Lists.partition(editList1, editList1.size() / 3);
-        // 분할한 리스트 1) 카테고리에 따라 분류 2) 우선순위에 따라 정렬
-        return setListToPriorityCateOrder(memberId, editList2);
+        Collections.sort(list, (d1, d2) -> d2.getChallenger() - d1.getChallenger());
+
+        // 리스트를 우선순위에 따라 정렬
+        List<MemberCategory> priority = getByMemberIdOrderByPriorityAsc(memberId);
+        if (list.size() >= 3) {
+            // 정렬된 리스트를 1/3 으로 분할
+            List<List<QuestDto.ListView>> editList2 = Lists.partition(list, list.size() / 3);
+            // 분할한 리스트 -> 1) 카테고리에 따라 분류 2) 우선순위에 따라 정렬
+            List<QuestDto.ListView> finalList = new ArrayList<>();
+            for (List<QuestDto.ListView> tmpList : editList2)
+                finalList.addAll(setListToPriorityCateOrder(tmpList, priority));
+            return finalList;
+        } else
+            // 리스트가 3개 미만
+            return setListToPriorityCateOrder(list, priority);
     } // TODO - testing
 
     @Transactional
@@ -105,43 +116,33 @@ public class QuestService {
     }
 
     @Transactional(readOnly = true)
-    private List<QuestDto.ListView> setListToPriorityCateOrder(Long memberId, List<List<QuestDto.ListView>> editList2) {
-        List<QuestDto.ListView> finalList = new ArrayList<>();
-        List<MemberCategory> priority =
-                memCateRepository.findByMember_IdOrderByPriorityAsc(memberId);
-        for (List<QuestDto.ListView> tmpList : editList2) {
-            // 분할된 리스트를 카테고리에 따라 분류
-            List<QuestDto.ListView> first = new ArrayList<>();
-            List<QuestDto.ListView> second = new ArrayList<>();
-            List<QuestDto.ListView> third = new ArrayList<>();
-            List<QuestDto.ListView> fourth = new ArrayList<>();
-            for (QuestDto.ListView quest : tmpList)
-                if (isPriorityCateEqualsQuestCate(priority, quest, 0))
-                    first.add(quest);
-                else if (isPriorityCateEqualsQuestCate(priority, quest, 1))
-                    second.add(quest);
-                else if (isPriorityCateEqualsQuestCate(priority, quest, 2))
-                    third.add(quest);
-                else if (isPriorityCateEqualsQuestCate(priority, quest, 3))
-                    fourth.add(quest);
-            // 분류한 카테고리를 우선순위에 맞게 수정
-            finalList.addAll(first);
-            finalList.addAll(second);
-            finalList.addAll(third);
-            finalList.addAll(fourth);
-        }
-        return finalList; // 리스트 리턴
+    private List<MemberCategory> getByMemberIdOrderByPriorityAsc(Long memberId) {
+        List<MemberCategory> priority = memCateRepository.findByMember_IdOrderByPriorityAsc(memberId);
+        // 우선순위를 설정하지 않은 경우 에러핸들링
+        if (priority.size() == 0) throw new GreenException(NO_PRIORITY);
+        return priority;
     }
 
-    @Transactional(readOnly = true)
-    private List<QuestDto.ListView> setNowChallenger(List<QuestDto.ListView> list) {
-        List<QuestDto.ListView> editList = new ArrayList<>();
-        for (QuestDto.ListView listView : list) {
-            listView.setChallenger(
-                    (int) memDoRepository.countByQuest_Id(listView.getQuestId())
-            );
-            editList.add(listView);
-        }
-        return editList;
+    @NotNull
+    private static List<QuestDto.ListView> setListToPriorityCateOrder(List<QuestDto.ListView> list, List<MemberCategory> priority) {
+        List<QuestDto.ListView> first = new ArrayList<>();
+        List<QuestDto.ListView> second = new ArrayList<>();
+        List<QuestDto.ListView> third = new ArrayList<>();
+        List<QuestDto.ListView> fourth = new ArrayList<>();
+
+        for (QuestDto.ListView quest : list)
+            if (isPriorityCateEqualsQuestCate(priority, quest, 0))
+                first.add(quest);
+            else if (isPriorityCateEqualsQuestCate(priority, quest, 1))
+                second.add(quest);
+            else if (isPriorityCateEqualsQuestCate(priority, quest, 2))
+                third.add(quest);
+            else if (isPriorityCateEqualsQuestCate(priority, quest, 3))
+                fourth.add(quest);
+
+        first.addAll(second);
+        first.addAll(third);
+        first.addAll(fourth);
+        return first;
     }
 }

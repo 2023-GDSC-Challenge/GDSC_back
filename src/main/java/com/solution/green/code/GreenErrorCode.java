@@ -14,6 +14,7 @@ public enum GreenErrorCode {
     NO_QUEST(500, "QUEST-ERR-500", "There is no corresponding QUEST."),
     NO_MEM_DO(500, "MEM_DO-ERR-500","There is no quest that user challenging."),
     NO_BADGE(500, "BADGE-SUPERUSER-ERROR", "There is no corresponding BADGE."),
+    NO_PRIORITY(500, "CATEGORY-ERR-500", "Please set PRIORITY of categories."),
 
 
 

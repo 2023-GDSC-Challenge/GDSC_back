@@ -15,10 +15,10 @@ public enum GreenErrorCode {
     NO_MEM_DO(500, "MEM_DO-ERR-500","There is no quest that user challenging."),
     NO_BADGE(500, "BADGE-SUPERUSER-ERROR", "There is no corresponding BADGE."),
     NO_PRIORITY(500, "CATEGORY-ERR-500", "Please set PRIORITY of categories."),
+    ALREADY_ADDED(500, "ADD-QUEST-ERR-500","This quest already been added to your QuestList."),
 
 
 
-    ALREADY_EXISTED(500, "CREATE-PERSON-ERR-500","have already been invited."),
 
     INVALID_DELETE_SUPERUSER(500, "INVALID-ERR-500", "SuperUser cannot be deleted from Travel."),
     INVALID_DELETE_NOTSUPERUSER(500, "INVALID-ERR-500", "Only SuperUser can delete the Travel."),

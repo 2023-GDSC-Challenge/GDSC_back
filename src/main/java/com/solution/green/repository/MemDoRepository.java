@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MemDoRepository extends JpaRepository<MemberDo, Long> {
+    boolean existsByMember_IdAndQuest_Id(Long memberId, Long questId);
     List<MemberDo> findByDueDateLessThan(Date dueDate);
     long countByQuest_Id(Long id);
     long countByQuest_SubCategory_CategoryAndStance(Category category, Boolean stance);

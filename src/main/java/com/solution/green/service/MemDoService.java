@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
 
 import static com.solution.green.code.GreenCode.QUEST_DONE;
 import static com.solution.green.code.GreenCode.QUEST_ING;
-import static com.solution.green.code.GreenErrorCode.NO_MEMBER;
-import static com.solution.green.code.GreenErrorCode.NO_QUEST;
+import static com.solution.green.code.GreenErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +40,9 @@ public class MemDoService {
 
     @Transactional
     public MemDoDto.ListView addToMyQuest(Long memberId, Long questId) {
+        if (memDoRepository.existsByMember_IdAndQuest_Id(memberId, questId))
+            throw new GreenException(ALREADY_ADDED);
+
         Date now = new Date();
         updateQuestChallenger(questId, 1);
         return MemDoDto.ListView.fromEntity(memDoRepository.save(

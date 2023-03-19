@@ -46,7 +46,7 @@ public class MemberDto {
         @NotNull
         private String password;
         @NotNull
-        private Integer reward;
+        private Double reward;
         @Nullable
         private String imageUrl;
         @Setter

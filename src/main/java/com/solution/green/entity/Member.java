@@ -44,7 +44,7 @@ public class Member implements Serializable {
 
     @Column(name = "member_reward", length = 20)
     @ColumnDefault("0")
-    private Integer reward;
+    private Double reward;
 
     @Column(name = "random_code", length = 50)
     private String randomCode;

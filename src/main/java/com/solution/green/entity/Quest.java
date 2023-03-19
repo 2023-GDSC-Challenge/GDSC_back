@@ -29,7 +29,7 @@ public class Quest implements Serializable {
     private String name;
 
     @Column(name = "quest_reward", length = 20, nullable = false)
-    private Integer reward;
+    private Double reward;
 
     @Column(name = "briefing", length = 200, nullable = true)
     private String briefing;

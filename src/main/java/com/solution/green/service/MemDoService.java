@@ -102,6 +102,8 @@ public class MemDoService {
 
         // stance 변경 false -> true(done)
         memberDo.setStance(QUEST_DONE.getBool());
+        // end date 를 현재 시각으로 설정
+        memberDo.setEndDate(new Date());
 
         // 퀘스트 완료 시 멤버 reward up
         member.setReward(member.getReward() + quest.getReward());

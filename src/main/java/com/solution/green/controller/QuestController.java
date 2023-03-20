@@ -42,9 +42,13 @@ public class QuestController {
         return questService.getQuestDetailView(questId);
     }
 
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
-    // every midnight // TODO - testing 미루기 - 테스트케이스가 좀 더 쌓이고!
-    public void validateFailedQuest() {
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") // every midnight
+    public void autoValidateFailedQuest() {
+        memDoService.validateFailedQuest();
+    }
+
+    @GetMapping("/forceValidateFailedQuest")
+    public void forceValidateFailedQuest() {
         memDoService.validateFailedQuest();
     }
 }

@@ -18,7 +18,7 @@ public class MemberGet implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", length = 20)
+    @Column(name = "id", length = 20) // = memberGetId
     private Long id;
 
     @ManyToOne

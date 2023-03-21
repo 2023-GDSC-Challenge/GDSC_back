@@ -31,6 +31,7 @@ public class MemDoService {
     private final MemberGetRepository memberGetRepository;
     private final BadgeRepository badgeRepository;
     private final QuestService questService;
+    private final CertificateService certificateService;
 
     private final Double[] achievementList = {
             Double.valueOf(30),
@@ -133,8 +134,13 @@ public class MemDoService {
     }
 
     public MemDoDto.DetailView getMyQuestDetailView(Long memberDoId) {
-        return MemDoDto.DetailView.fromEntity(
-                getMemberDoEntity(memberDoId));
+        MemDoDto.DetailView dto =
+                MemDoDto.DetailView.fromEntity(getMemberDoEntity(memberDoId));
+        if (dto.getStance())
+            dto.setCertificateImages(certificateService.getCertificateImages(memberDoId));
+        return dto;
+        // TODO - 이미지 추가 완료 -> 테스트 후 배포할 것
+        // TODO - stance 완료됐을 때만으로 처리할 것
     }
 
     @Transactional

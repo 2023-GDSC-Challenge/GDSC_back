@@ -6,6 +6,7 @@ import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 public class MemDoDto {
     @Getter
@@ -54,6 +55,9 @@ public class MemDoDto {
         private Date leftTime; // 프론트에서 직접 계산
         private Boolean stance;
         private Double achieveRate; // 보류
+        @Nullable
+        @Setter
+        private List<CertificateDto.DetailView> certificateImages;
 
         public static DetailView fromEntity(MemberDo memberDo) {
             return DetailView.builder()

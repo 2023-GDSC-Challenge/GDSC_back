@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum DatabaseName {
     USERS("users"),
     RETIRED("퇴직"),
-    URL_PREFIX("https://storage.googleapis.com/eco-reward-bucket/"),
+    URL_PREFIX("https://storage.googleapis.com/terra-q-bucket/"),
 
     ;
     private final String description;

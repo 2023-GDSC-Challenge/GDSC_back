@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 resources/serviceAccountKey.json
 resources/gcpBucketAccessKey.json
+resources/gcpBucketAccessKeyTerraQ.json
 resources/application.yml
 
 ### STS ###

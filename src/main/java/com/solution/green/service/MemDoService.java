@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
 
 import static com.solution.green.code.GreenCode.QUEST_DONE;
 import static com.solution.green.code.GreenCode.QUEST_ING;
-import static com.solution.green.code.GreenErrorCode.NO_MEMBER;
-import static com.solution.green.code.GreenErrorCode.NO_QUEST;
+import static com.solution.green.code.GreenErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +31,7 @@ public class MemDoService {
     private final MemberGetRepository memberGetRepository;
     private final BadgeRepository badgeRepository;
     private final QuestService questService;
+    private final CertificateService certificateService;
 
     private final Double[] achievementList = {
             Double.valueOf(30),
@@ -41,6 +41,9 @@ public class MemDoService {
 
     @Transactional
     public MemDoDto.ListView addToMyQuest(Long memberId, Long questId) {
+        if (memDoRepository.existsByMember_IdAndQuest_Id(memberId, questId))
+            throw new GreenException(ALREADY_ADDED);
+
         Date now = new Date();
         updateQuestChallenger(questId, 1);
         return MemDoDto.ListView.fromEntity(memDoRepository.save(
@@ -94,12 +97,18 @@ public class MemDoService {
         // setting
         MemberDo memberDo = getMemberDoEntity(memberDoId);
         Member member = memberDo.getMember();
-        Long cateId = questRepository.findById(memberDo.getQuest().getId())
-                .orElseThrow(() -> new GreenException(NO_QUEST))
-                .getSubCategory().getCategory().getId();
+        Quest quest = questRepository.findById(memberDo.getQuest().getId())
+                .orElseThrow(() -> new GreenException(NO_QUEST));
+        Long cateId = quest.getSubCategory().getCategory().getId();
 
         // stance 변경 false -> true(done)
         memberDo.setStance(QUEST_DONE.getBool());
+        // end date 를 현재 시각으로 설정
+        memberDo.setEndDate(new Date());
+
+        // 퀘스트 완료 시 멤버 reward up
+        member.setReward(member.getReward() + quest.getReward());
+        memberRepository.save(member);
 
         // 진행률 세팅
         Long doneCount =
@@ -125,8 +134,13 @@ public class MemDoService {
     }
 
     public MemDoDto.DetailView getMyQuestDetailView(Long memberDoId) {
-        return MemDoDto.DetailView.fromEntity(
-                getMemberDoEntity(memberDoId));
+        MemDoDto.DetailView dto =
+                MemDoDto.DetailView.fromEntity(getMemberDoEntity(memberDoId));
+        if (dto.getStance())
+            dto.setCertificateImages(certificateService.getCertificateImages(memberDoId));
+        return dto;
+        // TODO - 이미지 추가 완료 -> 테스트 후 배포할 것
+        // TODO - stance 완료됐을 때만으로 처리할 것
     }
 
     @Transactional

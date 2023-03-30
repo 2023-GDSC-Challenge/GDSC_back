@@ -2,9 +2,11 @@ package com.solution.green.dto;
 
 import com.solution.green.entity.MemberDo;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 public class MemDoDto {
     @Getter
@@ -18,6 +20,8 @@ public class MemDoDto {
         private QuestDto.ListView questDto;
         private Date startDate;
         private Date dueDate;
+        @Nullable
+        private Date endDate;
         private Date leftTime; // 프론트에서 직접 계산
         private Boolean stance;
         private Double achieveRate; // 보류
@@ -28,6 +32,7 @@ public class MemDoDto {
                     .questDto(QuestDto.ListView.fromEntity(memberDo.getQuest()))
                     .startDate(memberDo.getStartDate())
                     .dueDate(memberDo.getDueDate())
+                    .endDate(memberDo.getEndDate())
                     .stance(memberDo.getStance())
                     .build();
         }
@@ -45,9 +50,14 @@ public class MemDoDto {
         private QuestDto.DetailView questDto;
         private Date startDate;
         private Date dueDate;
+        @Nullable
+        private Date endDate;
         private Date leftTime; // 프론트에서 직접 계산
         private Boolean stance;
         private Double achieveRate; // 보류
+        @Nullable
+        @Setter
+        private List<CertificateDto.DetailView> certificateImages;
 
         public static DetailView fromEntity(MemberDo memberDo) {
             return DetailView.builder()
@@ -55,6 +65,7 @@ public class MemDoDto {
                     .questDto(QuestDto.DetailView.fromEntity(memberDo.getQuest()))
                     .startDate(memberDo.getStartDate())
                     .dueDate(memberDo.getDueDate())
+                    .endDate(memberDo.getEndDate())
                     .stance(memberDo.getStance())
                     .build();
         }

@@ -24,7 +24,6 @@ public class QuestController {
     public void addToMyQuest(@PathVariable final Long memberId,
                              @PathVariable final Long questId) {
         memDoService.addToMyQuest(memberId, questId);
-        // TODO - 있는데 또 추가하려고 할 경우 에러처리
     }
 
     @PostMapping("/create-quest") // only for back-end
@@ -43,9 +42,13 @@ public class QuestController {
         return questService.getQuestDetailView(questId);
     }
 
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
-    // every midnight // TODO - testing 미루기 - 테스트케이스가 좀 더 쌓이고!
-    public void validateFailedQuest() {
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") // every midnight
+    public void autoValidateFailedQuest() {
+        memDoService.validateFailedQuest();
+    }
+
+    @GetMapping("/forceValidateFailedQuest")
+    public void forceValidateFailedQuest() {
         memDoService.validateFailedQuest();
     }
 }

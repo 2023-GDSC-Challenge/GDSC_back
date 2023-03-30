@@ -3,6 +3,7 @@ package com.solution.green.controller;
 import com.solution.green.dto.MemCateDto;
 import com.solution.green.dto.MemGetDto;
 import com.solution.green.dto.MemberDto;
+import com.solution.green.dto.ReportDto;
 import com.solution.green.service.GCSService;
 import com.solution.green.service.MemCateService;
 import com.solution.green.service.MemGetService;
@@ -60,6 +61,26 @@ public class MemberController {
     @GetMapping("/get-member-detail/{memberId}")
     public MemberDto.Response getMemberDetail(@PathVariable final Long memberId) {
         return memberService.getMemberDetail(memberId);
+    }
+
+    @GetMapping("/getMemberRandomCode/{memberId}")
+    public String getMemberRandomCode(@PathVariable final Long memberId) {
+        return memberService.getMemberRandomCode(memberId);
+    }
+
+    @GetMapping("/getMemberRank/{memberId}")
+    public int getMemberRank(@PathVariable final Long memberId) {
+        return memberService.getMemberRank(memberId);
+    }
+
+    @GetMapping("/getMonthlyReport/{memberId}")
+    public ReportDto getMonthlyReport(@PathVariable final Long memberId) {
+        return memberService.getMonthlyReport(memberId);
+    }
+
+    @GetMapping("/getWeeklyReport/{memberId}")
+    public ReportDto getWeeklyReport(@PathVariable final Long memberId) {
+        return memberService.getWeeklyReport(memberId);
     }
 
     @PostMapping("/login")

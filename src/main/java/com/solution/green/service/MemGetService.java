@@ -25,7 +25,7 @@ public class MemGetService {
     private final MemberRepository memberRepository;
     private final BadgeRepository badgeRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public MemGetDto.Title createTitle(Long memberId, Long titleId) {
         return MemGetDto.Title.fromEntity(
                 saveMemberGetEntity(MemberGet.builder()

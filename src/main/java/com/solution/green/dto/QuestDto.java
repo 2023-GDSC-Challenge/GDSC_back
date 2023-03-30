@@ -20,7 +20,7 @@ public class QuestDto {
         @NotNull
         private Long parentCategoryId;
         @NotNull
-        private Integer reward;
+        private Double reward;
         private String memo;
         private Integer timeLimit;
     }
@@ -38,7 +38,7 @@ public class QuestDto {
         @NotNull
         private SubCateDto.WithParent categoryDto;
         @NotNull
-        private Integer reward;
+        private Double reward;
         private String briefing;
         private Integer timeLimit;
         @Nullable
@@ -76,7 +76,7 @@ public class QuestDto {
         @NotNull
         private SubCateDto.WithParent categoryDto;
         @NotNull
-        private Integer reward;
+        private Double reward;
         private String briefing;
         private String information;
         private Integer timeLimit;

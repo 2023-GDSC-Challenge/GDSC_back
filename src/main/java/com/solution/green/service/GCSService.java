@@ -6,10 +6,10 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -22,11 +22,12 @@ public class GCSService {
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
 
-
     public String uploadImage(MultipartFile file) throws IOException {
         Storage storage = StorageOptions.newBuilder()
                 .setCredentials(ServiceAccountCredentials.fromStream(
-                        new FileInputStream(SERVICE_ACCOUNT_JSON_PATH.getDescription())))
+                        new ClassPathResource(
+                                SERVICE_ACCOUNT_JSON_PATH.getDescription())
+                                .getInputStream()))
                 .setProjectId(PROJECTED.getDescription()).build().getService();
         String uuid = UUID.randomUUID().toString(); // GCS 에 저장될 파일 이름
         String ext = file.getContentType(); // 파일의 형식 ex) JPG

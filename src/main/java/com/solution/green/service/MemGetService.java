@@ -1,5 +1,6 @@
 package com.solution.green.service;
 
+import com.solution.green.dto.MemCateDto;
 import com.solution.green.dto.MemGetDto;
 import com.solution.green.entity.Badge;
 import com.solution.green.entity.MemberGet;
@@ -24,9 +25,19 @@ public class MemGetService {
     private final MemberGetRepository memberGetRepository;
     private final MemberRepository memberRepository;
     private final BadgeRepository badgeRepository;
+    private final MemCateService memCateService;
+
+    private final MemCateDto.Request defaultCateRequest = MemCateDto.Request.builder()
+            .first(Long.valueOf(1))
+            .second(Long.valueOf(2))
+            .third(Long.valueOf(3))
+            .fourth(Long.valueOf(4))
+            .build();
 
     @Transactional
     public MemGetDto.Title createTitle(Long memberId, Long titleId) {
+        // TODO - 카테고리 임의로 설정
+        memCateService.createPriority(memberId, defaultCateRequest);
         return MemGetDto.Title.fromEntity(
                 saveMemberGetEntity(MemberGet.builder()
                         .member(memberRepository.findById(memberId)

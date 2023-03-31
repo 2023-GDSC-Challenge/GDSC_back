@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
 
 import static com.solution.green.code.GreenCode.QUEST_DONE;
 import static com.solution.green.code.GreenCode.QUEST_ING;
-import static com.solution.green.code.GreenErrorCode.NO_MEMBER;
-import static com.solution.green.code.GreenErrorCode.NO_QUEST;
+import static com.solution.green.code.GreenErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +31,7 @@ public class MemDoService {
     private final MemberGetRepository memberGetRepository;
     private final BadgeRepository badgeRepository;
     private final QuestService questService;
+    private final CertificateService certificateService;
 
     private final Double[] achievementList = {
             Double.valueOf(30),
@@ -41,6 +41,9 @@ public class MemDoService {
 
     @Transactional
     public MemDoDto.ListView addToMyQuest(Long memberId, Long questId) {
+        if (memDoRepository.existsByMember_IdAndQuest_Id(memberId, questId))
+            throw new GreenException(ALREADY_ADDED);
+
         Date now = new Date();
         updateQuestChallenger(questId, 1);
         return MemDoDto.ListView.fromEntity(memDoRepository.save(
@@ -56,20 +59,16 @@ public class MemDoService {
         );
     }
 
-    public List<MemDoDto.ListView> getMyQuestNotYetList(Long memberId) {
-        return getMyQuestList(memberId, 0);
-    }
-
     public List<MemDoDto.ListView> getMyQuestIngList(Long memberId) {
-        return getMyQuestList(memberId, 1);
+        return getMyQuestList(memberId, QUEST_ING.getBool());
     }
 
     public List<MemDoDto.ListView> getMyQuestDoneList(Long memberId) {
-        return getMyQuestList(memberId, 2);
+        return getMyQuestList(memberId, QUEST_DONE.getBool());
     }
 
     @Transactional(readOnly = true)
-    public List<MemDoDto.ListView> getMyQuestList(Long memberId, int stance) {
+    public List<MemDoDto.ListView> getMyQuestList(Long memberId, boolean stance) {
         return memDoRepository
                 .findByMember_IdAndStanceOrderByDueDateAsc(memberId, stance)
                 .stream()
@@ -98,12 +97,18 @@ public class MemDoService {
         // setting
         MemberDo memberDo = getMemberDoEntity(memberDoId);
         Member member = memberDo.getMember();
-        Long cateId = questRepository.findById(memberDo.getQuest().getId())
-                .orElseThrow(() -> new GreenException(NO_QUEST))
-                .getSubCategory().getCategory().getId();
+        Quest quest = questRepository.findById(memberDo.getQuest().getId())
+                .orElseThrow(() -> new GreenException(NO_QUEST));
+        Long cateId = quest.getSubCategory().getCategory().getId();
 
         // stance 변경 false -> true(done)
         memberDo.setStance(QUEST_DONE.getBool());
+        // end date 를 현재 시각으로 설정
+        memberDo.setEndDate(new Date());
+
+        // 퀘스트 완료 시 멤버 reward up
+        member.setReward(member.getReward() + quest.getReward());
+        memberRepository.save(member);
 
         // 진행률 세팅
         Long doneCount =
@@ -129,8 +134,13 @@ public class MemDoService {
     }
 
     public MemDoDto.DetailView getMyQuestDetailView(Long memberDoId) {
-        return MemDoDto.DetailView.fromEntity(
-                getMemberDoEntity(memberDoId));
+        MemDoDto.DetailView dto =
+                MemDoDto.DetailView.fromEntity(getMemberDoEntity(memberDoId));
+        if (dto.getStance())
+            dto.setCertificateImages(certificateService.getCertificateImages(memberDoId));
+        return dto;
+        // TODO - 이미지 추가 완료 -> 테스트 후 배포할 것
+        // TODO - stance 완료됐을 때만으로 처리할 것
     }
 
     @Transactional
@@ -170,12 +180,8 @@ public class MemDoService {
         List<MemberDo> questList = memDoRepository.findByDueDateLessThan(new Date());
         for (MemberDo entity : questList)
             if (getCertificateImageCount(entity.getId())
-                    < getQuestIteration(entity.getId())) {
-                // 퀘스트 challenger -= 1
-                updateQuestChallenger(entity.getQuest().getId(), -1);
-                // memberDo DB 에서 삭제
-                memDoRepository.delete(entity);
-            }
+                    < getQuestIteration(entity.getId()))
+                deleteQuest(entity.getId());
     }
 
     @Transactional(readOnly = true)

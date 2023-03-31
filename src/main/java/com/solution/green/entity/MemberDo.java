@@ -34,6 +34,8 @@ public class MemberDo implements Serializable {
     private Date startDate;
     @Column(name = "due_date", nullable = true)
     private Date dueDate;
+    @Column(name = "end_date", nullable = true)
+    private Date endDate;
 
     @Column(name = "stance", nullable = false)
     private Boolean stance;

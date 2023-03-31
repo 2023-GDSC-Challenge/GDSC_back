@@ -37,6 +37,7 @@ public class MemberService {
                             .email(request.getEmail())
                             .nickname(request.getNickname())
                             .password(request.getPassword())
+                            .reward(0.0)
                             .build());
             String randomString = setRandomNumber(member.getId());
             member.setRandomCode(randomString);
